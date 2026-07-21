@@ -17,18 +17,22 @@ export default function Header() {
             onClick={() => setMenuOpen(!menuOpen)}
             className="absolute top-6 text-white text-3xl"
           >
-
+            {menuOpen ? (
+              <i class="bi bi-arrow-right-circle"></i>
+            ) : (
+              <i className="bi bi-list left-2"></i>
+            )}
           </button>
           {/* pesquisa */}
           <div className="order-2 flex-1 flex justify-center min-w-0">
-            <div className="flex items-start md:items-center bg-black rounded-xl px-4 md:px-4 pt-2.5 pb-3 md:py-3 w-full max-w-60 md:max-w-lg mx-auto">
+            <div className="flex items-start md:items-center bg-black rounded-xl px-3 md:px-4 pt-2 pb-2.5 md:py-3 w-full max-w-48 md:max-w-lg mx-auto">
               <i className="bi bi-search text-white mr-2 md:mr-3 shrink-0"></i>
 
               {/* mobile */}
               <input
                 type="text"
                 placeholder="pesquise"
-                className="block md:hidden bg-transparent outline-none text-white placeholder-white text-lg w-full min-w-0 uppercase"
+                className="block md:hidden bg-transparent outline-none text-white placeholder-white text-base w-full min-w-50 uppercase"
               />
 
               {/* desktop */}
