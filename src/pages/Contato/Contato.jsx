@@ -8,7 +8,7 @@ function Contato() {
 
       <section className="relative mt-10 min-h-100 rounded-[35px] overflow-hidden border border-blue-400/30 shadow-2xl shadow-blue-950/60 bg-slate-950">
         {/* <img
-          src="/imagens/banner-contato.png"
+          src="./src/Imagens/banner-contato.png"
           alt="banner contato esportivo"
           className="absolute inset-0 w-full h-full object-cover opacity-45"
         /> */}

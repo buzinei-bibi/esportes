@@ -26,7 +26,7 @@ function News() {
 
             <div className="bg-black/20 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden hover:scale-105 duration-300">
               <img
-                src="/imagens/vôlei.jpg"
+                src="./src/Imagens/vôlei.jpg"
                 className="w-full h-52 object-cover"
                 alt="vôlei"
               />
@@ -55,7 +55,7 @@ function News() {
 
             <div className="bg-black/20 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden hover:scale-105 duration-300">
               <img
-                src="/imagens/handebol.jpg"
+                src="./src/Imagens/handebol.jpg"
                 className="w-full h-52 object-cover"
                 alt="handebol"
               />
@@ -83,7 +83,7 @@ function News() {
 
             <div className="bg-black/20 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden hover:scale-105 duration-300">
               <img
-                src="/imagens/tênis de mesa.jpg"
+                src="./src/Imagens/tênis de mesa.jpg"
                 className="w-full h-52 object-cover"
                 alt="tênis de mesa"
               />
@@ -111,7 +111,7 @@ function News() {
 
             <div className="bg-black/20 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden hover:scale-105 duration-300">
               <img
-                src="/imagens/vôlei.jpg"
+                src="./src/Imagens/vôlei.jpg"
                 className="w-full h-52 object-cover"
                 alt="vôlei"
               />
@@ -144,7 +144,7 @@ function News() {
             <div className="bg-black/20 backdrop-blur-md border border-white/10  rounded-2xl overflow-hidden hover:scale-105 duration-300">
               <div className="md:flex">
                 <img
-                  src="/imagens/tênis de mesa.jpg"
+                  src="./src/Imagens/tênis de mesa.jpg"
                   className="w-full md:w-1/2 h-72 object-cover"
                   alt="tênis de mesa"
                 />
@@ -175,7 +175,7 @@ function News() {
             <article className="bg-black/20 backdrop-blur-md border border-white/10  rounded-2xl overflow-hidden hover:scale-105 duration-300">
               <div className="md:flex">
                 <img
-                  src="/imagens/handebol.jpg"
+                  src="./src/Imagens/handebol.jpg"
                   className="w-full md:w-1/2 h-72 object-cover"
                   alt="handebol"
                 />

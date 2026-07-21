@@ -69,7 +69,7 @@ function Home() {
                   <div className="absolute inset-0 bg-blue-500 rounded-full blur-xl opacity-25"></div>
 
                   <img
-                    src="/imagens/handebol.png"
+                    src="./src/Imagens/handebol.png"
                     alt="handebol"
                     className="relative w-20 h-20 transition-transform duration-300 group-hover:scale-110"
                   />
@@ -101,7 +101,7 @@ function Home() {
                   <div className="absolute inset-0 bg-blue-500 rounded-full blur-xl opacity-25"></div>
 
                   <img
-                    src="/imagens/vôlei.png"
+                    src="./src/Imagens/vôlei.png"
                     alt="Vôlei"
                     className="relative w-20 h-20 transition-transform duration-300 group-hover:scale-110"
                   />
@@ -131,7 +131,7 @@ function Home() {
                   <div className="absolute inset-0 bg-blue-500 rounded-full blur-xl opacity-25"></div>
 
                   <img
-                    src="/imagens/tênis de mesa.png"
+                    src="./src/Imagens/tênis de mesa.png"
                     alt="tênis de mesa"
                     className="relative w-20 h-20 transition-transform duration-300 group-hover:scale-110"
                   />

@@ -12,7 +12,7 @@ export default function Footer() {
           {/* LOGOTIPO */}
           <div className="flex items-center justify-center shrink-0">
             <img
-              src="imagens/logotipo.png"
+              src="./src/Imagens/logotipo.png"
               alt="logotipo"
               className="w-20 h-28 object-contain opacity-90"
             />

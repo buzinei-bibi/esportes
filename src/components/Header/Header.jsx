@@ -17,11 +17,7 @@ export default function Header() {
             onClick={() => setMenuOpen(!menuOpen)}
             className="absolute top-6 text-white text-3xl"
           >
-            {menuOpen ? (
-              <i class="bi bi-arrow-right-circle"></i>
-            ) : (
-              <i className="bi bi-list left-2"></i>
-            )}
+
           </button>
           {/* pesquisa */}
           <div className="order-2 flex-1 flex justify-center min-w-0">
@@ -46,7 +42,7 @@ export default function Header() {
 
           {/* logotipo */}
           <img
-            src="imagens/logotipo.png"
+            src="./src/Imagens/logotipo.png"
             alt="logotipo"
             className="order-3 md:order-1 w-14 md:w-16 lg:w-20 h-auto object-contain shrink-0"
           />
