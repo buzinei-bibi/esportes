@@ -11,26 +11,28 @@ export default function Header() {
         <div className="w-full bg-white h-7"></div>
 
         {/* barra principal */}
-        <div className="w-full max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4 md:gap-8">
+        <div className="relative w-full max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4 md:gap-8">
           {/* botão menu mobile */}
           <button
-            id="menu-toggle"
-            className="md:hidden order-1 text-white text-3xl shrink-0"
             onClick={() => setMenuOpen(!menuOpen)}
+            className="absolute top-6 text-white text-3xl"
           >
-            <i className={menuOpen ? "bi bi-x" : "bi bi-list"}></i>
+            {menuOpen ? (
+              <i class="bi bi-arrow-right-circle"></i>
+            ) : (
+              <i className="bi bi-list left-2"></i>
+            )}
           </button>
-
           {/* pesquisa */}
           <div className="order-2 flex-1 flex justify-center min-w-0">
-            <div className="flex items-start md:items-center bg-black rounded-xl px-3 md:px-4 pt-1.5 pb-2 md:py-3 w-full max-w-40 md:max-w-lg mx-auto">
+            <div className="flex items-start md:items-center bg-black rounded-xl px-4 md:px-4 pt-2.5 pb-3 md:py-3 w-full max-w-60 md:max-w-lg mx-auto">
               <i className="bi bi-search text-white mr-2 md:mr-3 shrink-0"></i>
 
               {/* mobile */}
               <input
                 type="text"
                 placeholder="pesquise"
-                className="block md:hidden bg-transparent outline-none text-white placeholder-white text-sm w-full min-w-0 uppercase"
+                className="block md:hidden bg-transparent outline-none text-white placeholder-white text-lg w-full min-w-0 uppercase"
               />
 
               {/* desktop */}
@@ -71,7 +73,7 @@ export default function Header() {
               className="hover:text-blue-300 flex items-center gap-2"
             >
               <i className="bi bi-person text-xl"></i>
-              CONTATO
+              CONTATOS
             </Link>
           </nav>
         </div>
@@ -93,9 +95,9 @@ export default function Header() {
       >
         <button
           onClick={() => setMenuOpen(false)}
-          className="absolute top-6 left-6 text-white text-3xl"
+          className="absolute top-6 right-10 text-white text-3xl"
         >
-          <i className="bi bi-arrow-left"></i>
+          <i class="bi bi-arrow-right-circle"></i>
         </button>
 
         <nav className="flex flex-col gap-6 text-lg font-bold">
@@ -123,7 +125,7 @@ export default function Header() {
             className="hover:text-blue-300 flex items-center gap-3"
           >
             <i className="bi bi-person text-2xl"></i>
-            CONTATO
+            CONTATOS
           </Link>
         </nav>
       </div>
