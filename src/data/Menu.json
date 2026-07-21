@@ -1,0 +1,22 @@
+[
+  {
+    "url": "/",
+    "label": "home",
+    "customClass": ""
+  },
+  {
+    "url": "Favoritos",
+    "label": "favoritos",
+    "customClass": ""
+  },
+  {
+    "url": "/Contatos",
+    "label": "contatos",
+    "customClass": ""
+  },
+  {
+    "url": "/News",
+    "label": "News",
+    "customClass": ""
+  }
+]
