@@ -76,15 +76,6 @@ export default function Footer() {
                 </li>
                 <li>
                   <Link
-                    to="/Favoritos"
-                    className="flex items-center gap-2 hover:text-blue-100 transition"
-                  >
-                    <i className="bi bi-star-fill w-4 text-center shrink-0"></i>
-                    FAVORITOS
-                  </Link>
-                </li>
-                <li>
-                  <Link
                     to="/Contato"
                     className="flex items-center gap-2 hover:text-blue-100 transition"
                   >

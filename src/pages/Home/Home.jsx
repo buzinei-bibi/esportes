@@ -28,7 +28,7 @@ function Home() {
 
               <div className="flex gap-4 mt-6">
                 <Link
-                  to="/Favoritos"
+                  to="/News"
                   className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl text-sm sm:text-base font-bold transition"
                 >
                   VER ESPORTES
