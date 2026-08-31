@@ -2,7 +2,7 @@
 
 portal esportivo desenvolvido como projeto pessoal do curso de front-end, com foco em dar visibilidade a modalidades esportivas de taubaté que costumam receber pouco destaque na mídia local: **handebol**, **tênis de mesa** e **vôlei**.
 
-## :tools:
+## ferramentas
 
 <a href="https://skillicons.dev">
 <img src="https://skillicons.dev/icons?i=excalidraw,react,js,tailwind,figma,vite,git,github,vscode" alt="excalidraw, react, javascript, tailwind css, figma, vite, git, github, vscode" />
