@@ -2,6 +2,10 @@
 
 portal esportivo desenvolvido como projeto pessoal do curso de front-end, com foco em dar visibilidade a modalidades esportivas de taubaté que costumam receber pouco destaque na mídia local: **handebol**, **tênis de mesa** e **vôlei**.
 
+## link do projeto 
+
+https://github.com/buzinei-bibi/esportes
+
 ## ferramentas
 
 <a href="https://skillicons.dev">
