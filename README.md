@@ -2,11 +2,6 @@
 
 portal esportivo desenvolvido como projeto pessoal do curso de front-end, com foco em dar visibilidade a modalidades esportivas de taubaté que costumam receber pouco destaque na mídia local: **handebol**, **tênis de mesa** e **vôlei**.
 
-## screenshots
-
-<img width="550" alt="home" src="https://github.com/user-attachments/assets/e5b45c09-e2b3-4e6a-9393-cd555166f2c6" />
-<img width="550" alt="notícias" src="https://github.com/user-attachments/assets/76397d8c-a74b-49c9-bb6f-dce049160fca" />
-
 ## :tools: ferramentas
 
 <a href="https://skillicons.dev">
