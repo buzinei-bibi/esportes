@@ -4,7 +4,7 @@ portal esportivo desenvolvido como projeto pessoal do curso de front-end, com fo
 
 ## link do projeto 
 
-https://github.com/buzinei-bibi/esportes
+https://esportes-zgzb.onrender.com/
 
 ## ferramentas
 
