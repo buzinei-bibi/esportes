@@ -37,12 +37,6 @@ function Home() {
                   ÚLTIMAS NOTÍCIAS
                   <span aria-hidden="true">→</span>
                 </Link>
-                <Link
-                  to="/#esportes"
-                  className="hidden sm:block text-sm font-semibold text-slate-300 hover:text-white transition"
-                >
-                  VER ESPORTES
-                </Link>
               </div>
             </div>
           </div>
