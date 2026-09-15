@@ -7,31 +7,41 @@ function Home() {
       <main className="max-w-7xl mx-auto px-4 pb-4 w-full ">
         {/* BANNER */}
         <section className="mt-4 sm:mt-8 sm:w-screen sm:relative sm:left-1/2 sm:right-1/2 sm:mx-[-50vw]">
-          <div className="relative w-full h-44 sm:h-80 md:h-96 lg:h-125 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl max-w-360 mx-auto">
-            {/* overlay */}
-            <div className="absolute inset-0 bg-black/60"></div>
+          <div className="relative w-full h-72 sm:h-80 md:h-96 lg:h-125 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl max-w-360 mx-auto bg-linear-to-br from-slate-900 to-slate-950">
+            {/* formas decorativas */}
+            <div className="absolute -top-10 -right-10 w-40 h-40 sm:w-56 sm:h-56 rounded-full bg-blue-700 opacity-30"></div>
+            <div className="absolute -bottom-16 right-8 sm:right-16 w-28 h-28 sm:w-40 sm:h-40 rounded-full bg-blue-500 opacity-20"></div>
 
-            {/* conteúdo do banner */}
-            <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-8 lg:p-12 text-white">
-              <span className="bg-blue-600 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-[10px] sm:text-sm font-bold w-fit">
-                PORTAL ESPORTIVO
+            {/* conteúdo do banner, centralizado */}
+            <div className="relative h-full flex flex-col items-center justify-center text-center gap-3 sm:gap-4 px-6 sm:px-8 lg:px-12">
+              <span className="flex items-center gap-2 bg-white/5 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full w-fit">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+                <span className="text-[10px] sm:text-sm font-semibold tracking-wide text-blue-300">
+                  PORTAL ESPORTIVO
+                </span>
               </span>
 
-              <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mt-3 sm:mt-4 leading-tight uppercase">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-medium leading-snug sm:leading-tight text-white max-w-xs sm:max-w-xl">
                 VIVA O ESPORTE DE TAUBATÉ
               </h1>
 
-              <p className="hidden sm:block text-sm md:text-base lg:text-xl text-gray-200 mt-4 uppercase max-w-2xl">
-                ACOMPANHE CAMPEONATOS, RESULTADOS, MODALIDADES E OS PRINCIPAIS
-                DESTAQUES ESPORTIVOS DA CIDADE.
+              <p className="hidden sm:block text-sm md:text-base lg:text-lg text-slate-400 max-w-md lg:max-w-xl">
+                ACOMPANHE CAMPEONATOS, RESULTADOS, MODALIDADES E OS PRINCIPAIS DESTAQUES ESPORTIVOS DA CIDADE.
               </p>
 
-              <div className="flex gap-4 mt-4 sm:mt-6">
+              <div className="flex items-center gap-4 mt-1 sm:mt-2">
                 <Link
                   to="/News"
-                  className="bg-blue-600 hover:bg-blue-700 px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl text-xs sm:text-base font-bold transition"
+                  className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 px-4 py-2.5 sm:px-6 sm:py-3 rounded-full text-xs sm:text-base font-semibold text-white transition w-fit"
                 >
                   ÚLTIMAS NOTÍCIAS
+                  <span aria-hidden="true">→</span>
+                </Link>
+                <Link
+                  to="/#esportes"
+                  className="hidden sm:block text-sm font-semibold text-slate-300 hover:text-white transition"
+                >
+                  VER ESPORTES
                 </Link>
               </div>
             </div>
