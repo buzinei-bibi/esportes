@@ -105,7 +105,7 @@
 
 .ct-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.75rem; }
 
-/* botão inclinado (mesmo do "VER MAIS" da home) */
+/* botão principal (mesmo do "VER MAIS" da home, com cantos arredondados) */
 .ct-botao {
   position: relative;
   overflow: hidden;
@@ -119,7 +119,7 @@
   font-weight: 700;
   font-size: 1.05rem;
   letter-spacing: 0.08em;
-  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+  border-radius: 12px;
   transition: background 0.2s;
 }
 .ct-botao:hover { background: #3b82f6; }
