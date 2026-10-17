@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import Button from "../../components/Button/Button";
+import { normalizar } from "../../data/busca";
 
 const now = Date.now();
 
@@ -176,6 +178,13 @@ function formatarTempo(data, agora) {
 
 function News() {
   const [agora, setAgora] = useState(new Date());
+  // ?busca=... vem da pesquisa do header (digitada ou por voz)
+  const [params] = useSearchParams();
+  const busca = params.get("busca") || "";
+  const termo = normalizar(busca);
+  const lista = termo
+    ? noticias.filter((n) => normalizar(`${n.esporte} ${n.titulo} ${n.resumo}`).includes(termo))
+    : noticias;
 
   useEffect(() => {
     // atualiza o "tempo atrás" a cada 30 segundos, como um feed ao vivo
@@ -202,11 +211,23 @@ function News() {
               <p className="text-gray-300 mt-4 text-sm md:text-base">
                 acompanhe as principais novidades dos esportes de taubaté
               </p>
+
+              {/* resultado da busca */}
+              {busca && (
+                <p role="status" className="mt-4 text-sm text-blue-300 flex flex-wrap items-center gap-x-3 gap-y-1">
+                  {lista.length > 0
+                    ? `${lista.length} ${lista.length === 1 ? "notícia encontrada" : "notícias encontradas"} para "${busca}"`
+                    : `nenhuma notícia encontrada para "${busca}"`}
+                  <Link to="/News" className="underline underline-offset-4 hover:text-white">
+                    ver todas
+                  </Link>
+                </p>
+              )}
             </div>
 
             {/* grade de notícias */}
             <section className="grid 2xl:grid-cols-6 xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-2 gap-10">
-              {noticias.map((noticia) => (
+              {lista.map((noticia) => (
                 <div
                   key={noticia.id}
                   className="bg-black/20 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden hover:scale-105 duration-300"
