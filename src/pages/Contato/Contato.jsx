@@ -1,174 +1,323 @@
+import { useState } from "react";
 import Button from "../../components/Button/Button";
+import "./Contato.css";
+
+const EMAIL = "ttéesportes@gmail.com";
+const TELEFONE = "+55 (12) 12345-6789";
+const ENDERECO = "TV. AMADEU RIBEIRO DA COSTA, 272 - AREÃO, TREMEMBÉ - SP, 12125-442";
+
+const CONTATOS = [
+  { rotulo: "TELEFONE", valor: TELEFONE, icone: "bi-telephone-fill", link: "tel:+5512123456789" },
+  { rotulo: "E-MAIL", valor: EMAIL, icone: "bi-envelope-at-fill", link: `mailto:${EMAIL}` },
+  {
+    rotulo: "ENDEREÇO",
+    valor: ENDERECO,
+    icone: "bi-geo-alt-fill",
+    link: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ENDERECO)}`,
+    externo: true,
+  },
+];
+
+// assuntos: o chip da esquerda já escolhe a opção no formulário
+const ASSUNTOS = [
+  { nome: "NOTÍCIAS ESPORTIVAS", valor: "notícias esportivas", icone: "bi-newspaper" },
+  { nome: "CAMPEONATOS E EVENTOS", valor: "campeonatos", icone: "bi-calendar-event" },
+  { nome: "PARCERIAS E DIVULGAÇÕES", valor: "parcerias", icone: "bi-megaphone-fill" },
+];
+
+// mesmas redes do rodapé
+const REDES = [
+  { nome: "Instagram", link: "https://www.instagram.com/ec.taubate/", icone: "bi-instagram" },
+  { nome: "Facebook", link: "https://www.facebook.com/groups/ttesp/", icone: "bi-facebook" },
+  { nome: "YouTube", link: "https://www.youtube.com/hashtag/taubate", icone: "bi-youtube" },
+];
+
+// perguntas frequentes: explicam o que mandar em cada caso
+const PERGUNTAS = [
+  {
+    pergunta: "COMO DIVULGAR UM JOGO OU CAMPEONATO?",
+    resposta: "ENVIE PELO FORMULÁRIO A DATA, O LOCAL E AS EQUIPES, ESCOLHENDO O ASSUNTO CAMPEONATOS.",
+  },
+  {
+    pergunta: "QUERO SER PARCEIRO OU PATROCINADOR.",
+    resposta: "ESCOLHA PARCERIAS NO FORMULÁRIO E CONTE UM POUCO SOBRE SUA EMPRESA OU PROJETO.",
+  },
+  {
+    pergunta: "ENCONTREI UMA INFORMAÇÃO ERRADA NO SITE.",
+    resposta: "MANDE UMA MENSAGEM COM O LINK DA PÁGINA E A CORREÇÃO. A GENTE ATUALIZA.",
+  },
+];
+
+// cena do banner: o avião de papel leva a mensagem até a carta
+function CenaContato() {
+  return (
+    <svg viewBox="0 0 400 400" aria-hidden="true">
+      {/* rastro do voo */}
+      <path
+        className="ct-rastro"
+        d="M -20 340 C 60 300, 100 272, 140 240 S 228 166, 262 162"
+        fill="none"
+        stroke="var(--ct-accent-claro)"
+        strokeWidth="3"
+        strokeLinecap="round"
+        opacity=".55"
+      />
+
+      {/* carta */}
+      <g className="ct-flutua">
+        <g className="ct-carta">
+          <rect x="200" y="112" width="170" height="118" rx="6" fill="rgb(255 255 255 / .06)" stroke="var(--ct-accent-claro)" strokeWidth="2.5" />
+          <path d="M202 116 L285 176 L368 116" fill="none" stroke="var(--ct-accent-claro)" strokeWidth="2.5" strokeLinejoin="round" />
+          <path d="M202 226 L262 182 M368 226 L308 182" stroke="var(--ct-accent-claro)" strokeWidth="2" opacity=".5" />
+        </g>
+        {/* check de entregue */}
+        <g className="ct-check">
+          <circle cx="366" cy="112" r="18" fill="var(--ct-accent)" stroke="#020617" strokeWidth="3" />
+          <path d="M357 112 L363 118 L375 106" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+        </g>
+      </g>
+
+      {/* selos flutuando: telefone e localização */}
+      <g className="ct-flutua d2">
+        <circle cx="86" cy="118" r="32" fill="rgb(255 255 255 / .05)" stroke="rgb(255 255 255 / .15)" />
+        <rect x="74" y="98" width="24" height="40" rx="5" fill="none" stroke="#f8fafc" strokeWidth="3" />
+        <line x1="82" y1="131" x2="90" y2="131" stroke="#f8fafc" strokeWidth="3" strokeLinecap="round" />
+      </g>
+      <g className="ct-flutua">
+        <circle cx="318" cy="306" r="30" fill="rgb(255 255 255 / .05)" stroke="rgb(255 255 255 / .15)" />
+        <path d="M318 326 C 306 312, 302 304, 302 296 A 16 16 0 0 1 334 296 C 334 304, 330 312, 318 326 Z" fill="none" stroke="#f8fafc" strokeWidth="3" strokeLinejoin="round" />
+        <circle cx="318" cy="296" r="5" fill="var(--ct-accent-claro)" />
+      </g>
+
+      {/* avião de papel */}
+      <g className="ct-aviao">
+        <g transform="translate(-24 -16)">
+          <path d="M0 0 L48 16 L0 32 L10 16 Z" fill="#f8fafc" />
+          <path d="M10 16 L48 16 L14 26 Z" fill="var(--ct-accent-claro)" />
+        </g>
+      </g>
+    </svg>
+  );
+}
 
 function Contato() {
+  const [assunto, setAssunto] = useState("");
+  const [status, setStatus] = useState("");
+
+  // sem servidor: abre o e-mail da pessoa com a mensagem já preenchida
+  function enviar(e) {
+    e.preventDefault();
+    const dados = new FormData(e.currentTarget);
+    const nome = dados.get("nome");
+    const titulo = `[${(dados.get("assunto") || "contato").toString().toUpperCase()}] ${nome}`;
+    const corpo = `${dados.get("mensagem")}\n\n${nome}\n${dados.get("email")}`;
+    window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(titulo)}&body=${encodeURIComponent(corpo)}`;
+    setStatus("SEU APLICATIVO DE E-MAIL VAI ABRIR COM A MENSAGEM PRONTA. É SÓ ENVIAR.");
+  }
+
   return (
     <>
-    <main className="max-w-400 mx-auto px-6 pb-20 text-white uppercase">
-     {/* banner */}
-<section className="relative mt-10 min-h-80 rounded-[35px] overflow-hidden border border-blue-400/30 shadow-2xl shadow-blue-950/60 bg-slate-950">
-  <div className="absolute inset-0 bg-linear-to-r from-slate-950 via-blue-950/90 to-transparent"></div>
-  <div className="relative z-10 h-full min-h-110 flex flex-col justify-center px-8 md:px-16 max-w-3xl">
-    <p className="text-blue-300 text-xs tracking-[0.4em] font-bold mb-3">
-      central de contato
-    </p>
-
-    <h1 className="text-3xl md:text-5xl font-black leading-tight">
-      fale com nossa equipe
-    </h1>
-
-    <p className="text-gray-200 text-sm md:text-base mt-4 leading-relaxed">
-      dúvidas, sugestões, parcerias, campeonatos ou notícias esportivas?
-      entre em contato de forma rápida, simples e acessível.
-    </p>
-
-    <div className="flex flex-wrap gap-3 mt-6">
-      <a
-        href="#formulario"
-        className="px-6 py-3 rounded-xl bg-blue-700 hover:bg-blue-500 transition duration-300 font-bold text-sm shadow-lg shadow-blue-900/50"
-      >
-        enviar mensagem
-      </a>
-
-      <a
-        href="#mapa"
-        className="px-6 py-3 rounded-xl bg-white text-blue-950 hover:bg-blue-100 transition duration-300 font-bold text-sm"
-      >
-        ver localização
-      </a>
-    </div>
-  </div>
-</section>
-
-{/* cards */}
-<section className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-10">
-  <div className="group bg-blue-950 border border-blue-800/20 rounded-[25px] p-5 text-center hover:bg-blue-950 hover:border-blue-300 transition duration-300 shadow-xl">
-    <i className="bi bi-telephone-fill text-3xl text-blue-300"></i>
-    <h2 className="text-lg font-black mt-3">telefone</h2>
-    <p className="text-sm mt-1">+55 (12) 12345-6789</p>
-  </div>
-
-  <div className="group bg-blue-950 border border-blue-400/20 rounded-[25px] p-5 text-center hover:bg-blue-950 hover:border-blue-300 transition duration-300 shadow-xl">
-    <i className="bi bi-envelope-at-fill text-3xl text-blue-300"></i>
-    <h2 className="text-lg font-black mt-3">e-mail</h2>
-    <p className="text-sm mt-1"> taubateesportes@gmail.com</p>
-  </div>
-
-  <div className="group bg-blue-950 border border-blue-400/20 rounded-[25px] p-5 text-center hover:bg-blue-950 hover:border-blue-300 transition duration-300 shadow-xl">
-    <i className="bi bi-geo-alt-fill text-3xl text-blue-300"></i>
-    <h2 className="text-lg font-black mt-3">endereço</h2>
-    <p className="text-sm mt-1"> tv. amadeu ribeiro da costa,
-      <br /> 272 - areão, 
-      <br /> tremembé - SP, 12125-442
-    </p>
-  </div>
-</section>
-
-      {/* formulário */}
-
-      <section
-        id="formulario"
-        className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-12"
-      >
-        <aside className="lg:col-span-4 bg-blue-950 border border-blue-950 hover:border-blue-300 rounded-[30px] p-8 shadow-2xl">
-          <p className="text-blue-300 tracking-[0.3em] text-sm font-bold mb-4">
-            atendimento
-          </p>
-
-          <h2 className="text-3xl font-black mb-5">como podemos ajudar?</h2>
-          <p className="text-white leading-relaxed mb-8">
-            escolha o assunto e envie sua mensagem, nosso time responderá o mais
-            rápido possível.
-          </p>
-
-          <div className="space-y-4">
-            <div className="p-4 rounded-2xl bg-slate-950/70 border border-blue-400/20">
-              <i className="bi bi-newspaper text-blue-300 mr-2"></i>
-              notícias esportivas
+      <div className="ct uppercase">
+        {/* BANNER */}
+        <section className="ct-hero" aria-labelledby="ct-titulo">
+          <div className="ct-palco">
+            <div>
+              <h1 id="ct-titulo" className="ct-titulo ct-anim">
+                FALE COM
+                <br />
+                <em>NOSSA EQUIPE</em>
+              </h1>
+              <p className="ct-frase ct-anim">DÚVIDAS, SUGESTÕES, PARCERIAS OU CAMPEONATOS? FALE COM A GENTE.</p>
+              <div className="ct-acoes ct-anim">
+                <a href="#formulario" className="ct-botao">
+                  <span>ENVIAR MENSAGEM</span>
+                  <span className="ct-seta" aria-hidden="true">→</span>
+                </a>
+                <a href="#mapa" className="ct-link">
+                  VER LOCALIZAÇÃO
+                  <span aria-hidden="true">
+                    <i className="bi bi-geo-alt-fill text-xs"></i>
+                  </span>
+                </a>
+              </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-950/70 border border-blue-400/20">
-              <i className="bi bi-calendar-event text-blue-300 mr-2"></i>
-              campeonatos e eventos
-            </div>
-
-            <div className="p-4 rounded-2xl bg-slate-950/70 border border-blue-400/20">
-              <i className="bi bi-megaphone-fill text-blue-300 mr-2"></i>
-              parcerias e divulgações
+            <div className="ct-cena">
+              <CenaContato />
             </div>
           </div>
-        </aside>
 
-        <section className="lg:col-span-8 bg-blue-950 border border-blue-950 hover:border-blue-300 rounded-[30px] p-8 md:p-10 shadow-2xl">
-          <h2 className="text-3xl md:text-4xl font-black mb-3">
-            mande sua mensagem
-          </h2>
+          {/* contatos rápidos */}
+          <ul className="ct-cards" aria-label="Formas de contato">
+            {CONTATOS.map((c) => (
+              <li key={c.rotulo} className="flex-1 min-w-0 flex">
+                <a
+                  href={c.link}
+                  {...(c.externo ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  className="ct-card"
+                >
+                  <span className="ct-card-inner">
+                    <span className="ct-card-icone" aria-hidden="true">
+                      <i className={`bi ${c.icone}`}></i>
+                    </span>
+                    <span className="min-w-0">
+                      <span className="ct-card-rotulo">{c.rotulo}</span>
+                      <span className="ct-card-valor normal-case">{c.rotulo === "E-MAIL" ? c.valor : c.valor.toUpperCase()}</span>
+                    </span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
 
-          <form className="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm">
-            <input
-              type="text"
-              placeholder="SEU NOME"
-              className="bg-slate-950/80 border border-blue-500/30 text-white placeholder-gray-300 rounded-2xl px-5 py-4 outline-none"
-            />
+        {/* FORMULÁRIO */}
+        <section id="formulario" className="ct-secao grid gap-8 lg:grid-cols-12 lg:gap-12 items-start" aria-labelledby="ct-form-titulo">
+          <div className="lg:col-span-5">
+            <p className="ct-eyebrow">ATENDIMENTO</p>
+            <h2 className="ct-subtitulo">
+              COMO PODEMOS
+              <br />
+              <em>AJUDAR?</em>
+            </h2>
+            <p className="mt-4 text-sm text-slate-400 leading-relaxed max-w-md">
+              ESCOLHA O ASSUNTO E ENVIE SUA MENSAGEM, NOSSO TIME RESPONDERÁ O MAIS RÁPIDO POSSÍVEL.
+            </p>
+            <div className="mt-6 grid gap-2.5 max-w-md">
+              {ASSUNTOS.map((a) => (
+                <button
+                  key={a.valor}
+                  type="button"
+                  aria-pressed={assunto === a.valor}
+                  onClick={() => setAssunto(a.valor)}
+                  className="ct-assunto"
+                >
+                  <i className={`bi ${a.icone}`} aria-hidden="true"></i>
+                  {a.nome}
+                </button>
+              ))}
+            </div>
 
-            <input
-              type="email"
-              placeholder="SEU E-MAIL"
-              className="bg-slate-950/80 border border-blue-500/30 text-white placeholder-gray-300 rounded-2xl px-5 py-4 outline-none"
-            />
+            {/* redes sociais */}
+            <div className="mt-8">
+              <p className="ct-rotulo">SIGA O TAUBATÉ ESPORTES</p>
+              <ul className="mt-2 flex flex-wrap gap-2">
+                {REDES.map((rede) => (
+                  <li key={rede.nome}>
+                    <a
+                      href={rede.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${rede.nome} (abre em nova aba)`}
+                      className="ct-rede"
+                    >
+                      <i className={`bi ${rede.icone}`} aria-hidden="true"></i>
+                      {rede.nome.toUpperCase()}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
 
-            <select className="md:col-span-2 bg-slate-950/80 border border-blue-500/30 text-white uppercase rounded-2xl px-5 py-4">
-              <option>selecione o assunto</option>
-              <option>notícias esportivas</option>
-              <option>campeonatos</option>
-              <option>parcerias</option>
-              <option>outros assuntos</option>
-            </select>
+          <form onSubmit={enviar} className="ct-form lg:col-span-7 w-full max-w-2xl lg:justify-self-end grid gap-4 sm:grid-cols-2">
+            <h2 id="ct-form-titulo" className="ct-subtitulo sm:col-span-2 text-[1.75rem]! sm:text-[2.1rem]!">
+              MANDE SUA <em>MENSAGEM</em>
+            </h2>
 
-            <textarea
-              rows="7"
-              placeholder="ESCREVA SUA MENSAGEM"
-              className="md:col-span-2 bg-slate-950/80 border border-blue-500/30 text-white placeholder-gray-300 rounded-2xl px-5 py-4 resize-none"
-            ></textarea>
+            <div>
+              <label htmlFor="ct-nome" className="ct-rotulo">NOME</label>
+              <input id="ct-nome" name="nome" type="text" required placeholder="SEU NOME" autoComplete="name" className="ct-campo" />
+            </div>
+            <div>
+              <label htmlFor="ct-email" className="ct-rotulo">E-MAIL</label>
+              <input id="ct-email" name="email" type="email" required placeholder="SEU E-MAIL" autoComplete="email" className="ct-campo normal-case placeholder:uppercase" />
+            </div>
+            <div className="sm:col-span-2">
+              <label htmlFor="ct-assunto" className="ct-rotulo">ASSUNTO</label>
+              <select
+                id="ct-assunto"
+                name="assunto"
+                required
+                value={assunto}
+                onChange={(e) => setAssunto(e.target.value)}
+                className="ct-campo"
+              >
+                <option value="" disabled>
+                  SELECIONE O ASSUNTO
+                </option>
+                <option value="notícias esportivas">NOTÍCIAS ESPORTIVAS</option>
+                <option value="campeonatos">CAMPEONATOS</option>
+                <option value="parcerias">PARCERIAS</option>
+                <option value="outros assuntos">OUTROS ASSUNTOS</option>
+              </select>
+            </div>
+            <div className="sm:col-span-2">
+              <label htmlFor="ct-mensagem" className="ct-rotulo">MENSAGEM</label>
+              <textarea id="ct-mensagem" name="mensagem" rows="4" required placeholder="ESCREVA SUA MENSAGEM" className="ct-campo resize-none" />
+            </div>
 
-            <button
-              type="submit"
-              className="md:col-span-2 w-full md:w-fit px-9 py-4 rounded-xl bg-blue-700 hover:bg-blue-500 duration-300 font-black"
-            >
-              ENVIAR MENSAGEM
-              <i className="bi bi-send-fill ml-2"></i>
-            </button>
+            <div className="sm:col-span-2 flex flex-wrap items-center gap-4">
+              <button type="submit" className="ct-botao">
+                <span>ENVIAR MENSAGEM</span>
+                <i className="bi bi-send-fill ct-seta" aria-hidden="true"></i>
+              </button>
+              <p role="status" className="text-xs text-blue-300 tracking-wide">
+                {status}
+              </p>
+            </div>
           </form>
         </section>
-      </section>
 
-      {/* google maps */}
+        {/* MAPA + PERGUNTAS FREQUENTES */}
+        <section id="mapa" className="ct-secao pb-16 sm:pb-20 grid gap-8 lg:grid-cols-12 lg:gap-12 items-start" aria-labelledby="ct-mapa-titulo">
+          <div className="lg:col-span-7">
+            <div className="flex flex-wrap items-end justify-between gap-4 mb-5">
+              <div>
+                <p className="ct-eyebrow">GOOGLE MAPS</p>
+                <h2 id="ct-mapa-titulo" className="ct-subtitulo">
+                  ONDE <em>ESTAMOS</em>
+                </h2>
+                <p className="mt-3 text-xs sm:text-sm text-slate-400">{ENDERECO}</p>
+              </div>
+              <a href={CONTATOS[2].link} target="_blank" rel="noopener noreferrer" className="ct-link">
+                COMO CHEGAR
+                <span aria-hidden="true">→</span>
+              </a>
+            </div>
 
-      <section
-        id="mapa"
-        className="w-full rounded-[30px] p-6 mt-12 bg-blue-950 hover:border-blue-300 border border-blue-400/20 shadow-2xl"
-      >
-        <div className="mb-5">
-          <p className="text-blue-300 text-sm tracking-[0.3em] font-bold">
-            google maps
-          </p>
+            <div className="ct-mapa">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3672.857132836787!2d-45.5597409!3d-22.992280500000003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ccf90e2c49e509%3A0xeb2fa9c1ad7668bb!2sSmash%20Club%20-%20T%C3%AAnis%20de%20Mesa%20Taubat%C3%A9!5e0!3m2!1spt-BR!2sbr!4v1783079779265!5m2!1spt-BR!2sbr"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Mapa: localização do Taubaté Esportes"
+              />
+            </div>
+          </div>
 
-          <h2 className="text-3xl font-black mt-2"></h2>
-        </div>
+          <div className="lg:col-span-5">
+            <p className="ct-eyebrow">DÚVIDAS</p>
+            <h2 className="ct-subtitulo text-[1.75rem]! sm:text-[2.1rem]!">
+              PERGUNTAS <em>FREQUENTES</em>
+            </h2>
+            <div className="mt-5 grid gap-2.5">
+              {PERGUNTAS.map((item) => (
+                <details key={item.pergunta} className="ct-pergunta">
+                  <summary>
+                    {item.pergunta}
+                    <i className="bi bi-plus-lg" aria-hidden="true"></i>
+                  </summary>
+                  <p>{item.resposta}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
 
-        <div className="w-full h-550px rounded-[25px] overflow-hidden border-2 border-blue-400/30">
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3672.857132836787!2d-45.5597409!3d-22.992280500000003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ccf90e2c49e509%3A0xeb2fa9c1ad7668bb!2sSmash%20Club%20-%20T%C3%AAnis%20de%20Mesa%20Taubat%C3%A9!5e0!3m2!1spt-BR!2sbr!4v1783079779265!5m2!1spt-BR!2sbr"
-            className="w-full h-100"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            title="google maps"
-          />
-        </div>
-      </section>
-    </main>
-
-    {/* BOTÃO DE ACESSIBILIDADE */}
-    <Button />
+      {/* BOTÃO DE ACESSIBILIDADE */}
+      <Button espacoFinal={false} />
     </>
   );
 }
