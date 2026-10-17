@@ -1,0 +1,279 @@
+/* ================================================================
+   NOTÍCIAS — mesma linguagem da home e do contato:
+   faixas diagonais, fonte condensada, cards com cantos arredondados.
+   Cada esporte tem a sua cor (a mesma do banner da home).
+   ================================================================ */
+
+.nt {
+  --nt-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --nt-display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+  --nt-texto: "Barlow", system-ui, sans-serif;
+  font-family: var(--nt-texto);
+  color: #fff;
+}
+
+/* ---------- topo da página ---------- */
+.nt-topo {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  overflow: clip;
+}
+.nt-topo::before,
+.nt-topo::after {
+  content: "";
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  width: 22%;
+  background: rgb(37 99 235 / 0.09);
+  transform: skewX(-20deg);
+  z-index: -1;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent);
+}
+.nt-topo::before { right: 26%; }
+.nt-topo::after { right: 8%; width: 9%; background: rgb(37 99 235 / 0.16); }
+
+.nt-conteudo {
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-inline: clamp(20px, 4.5vw, 56px);
+}
+
+.nt-titulo {
+  font-family: var(--nt-display);
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  line-height: 0.9;
+  font-weight: 800;
+}
+
+/* NOTÍCIAS: título parado, com "CIAS" em tons de azul */
+.nt-letra-cor:nth-child(5) { color: #60a5fa; }
+.nt-letra-cor:nth-child(6) { color: #38bdf8; }
+.nt-letra-cor:nth-child(7) { color: #7dd3fc; }
+.nt-letra-cor:nth-child(8) { color: #a5b4fc; }
+@keyframes nt-sobe { to { opacity: 1; transform: none; } }
+
+/* ---------- fileira de um esporte ---------- */
+.nt-fileira-titulo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--nt-display);
+  font-size: clamp(1.6rem, 3vw, 2.25rem);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--nt-accent);
+}
+.nt-fileira-titulo::before {
+  content: "";
+  width: 34px;
+  height: 4px;
+  border-radius: 4px;
+  background: var(--nt-accent);
+}
+
+.nt-link-esporte {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--nt-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  color: var(--nt-accent);
+  transition: color 0.2s;
+}
+.nt-link-esporte:hover { color: #fff; }
+
+.nt-seta {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: rgb(255 255 255 / 0.05);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  transition: background 0.2s, border-color 0.2s, opacity 0.2s;
+}
+.nt-seta:hover:not(:disabled) { background: var(--nt-accent); border-color: var(--nt-accent); }
+.nt-seta:disabled { opacity: 0.3; cursor: default; }
+.nt-seta:focus-visible { outline: 2px solid var(--nt-accent); outline-offset: 3px; }
+
+/* faixa que rola para o lado (com "ímã" em cada card) */
+.nt-trilho {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: clamp(240px, 24%, 300px);
+  gap: 16px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 2px;
+  padding: 4px 2px 14px;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 0.2) transparent;
+}
+
+/* ---------- card de notícia ---------- */
+.nt-card {
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 20px;
+  background: rgb(0 0 0 / 0.2);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgb(147 197 253 / 0.35);
+  box-shadow: 0 10px 30px -18px rgb(37 99 235 / 0.8);
+  transition: transform 0.4s var(--nt-ease), border-color 0.3s, box-shadow 0.4s;
+}
+.nt-card:hover { transform: translateY(-6px); border-color: #fff; box-shadow: 0 22px 44px -16px var(--nt-accent); }
+.nt-card:focus-visible { outline: 2px solid var(--nt-accent); outline-offset: 3px; }
+
+.nt-foto {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #0b1530;
+}
+.nt-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s var(--nt-ease);
+}
+.nt-card:hover .nt-foto img { transform: scale(1.05); }
+.nt-foto::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 4px;
+  background: var(--nt-accent);
+}
+
+.nt-card-corpo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  padding: 16px 18px 18px;
+}
+.nt-card-titulo {
+  font-family: var(--nt-display);
+  font-weight: 700;
+  font-size: 1.2rem;
+  line-height: 1.08;
+  letter-spacing: 0.01em;
+}
+.nt-card-rodape {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 6px 8px;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: rgb(219 234 254 / 0.85);
+}
+.nt-card-rodape > span { white-space: nowrap; }
+.nt-ver-mais {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--nt-display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #fff;
+}
+.nt-ver-mais-seta { transition: transform 0.3s var(--nt-ease); }
+.nt-card:hover .nt-ver-mais-seta { transform: translateX(5px); }
+
+/* ---------- chegada: faixa que varre, texto subindo ---------- */
+.nt-varre {
+  position: absolute;
+  z-index: 3;
+  top: -10%;
+  bottom: -10%;
+  left: -40%;
+  width: 36%;
+  background: linear-gradient(90deg, #2563eb, #38bdf8);
+  opacity: 0;
+  pointer-events: none;
+  animation: nt-varre 1.1s cubic-bezier(0.7, 0, 0.2, 1) 0.05s;
+}
+@keyframes nt-varre {
+  0% { opacity: 0.95; transform: skewX(-20deg) translateX(0); }
+  100% { opacity: 0.95; transform: skewX(-20deg) translateX(520%); }
+}
+
+
+.nt-sub {
+  margin-top: 0.9rem;
+  font-weight: 500;
+  font-size: clamp(0.85rem, 1.4vw, 1rem);
+  letter-spacing: 0.04em;
+  color: #bfdbfe;
+  opacity: 0;
+  transform: translateY(24px);
+  animation: nt-sobe 0.9s var(--nt-ease) 0.25s forwards;
+}
+
+/* filtros por esporte */
+.nt-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 1.4rem;
+  opacity: 0;
+  transform: translateY(24px);
+  animation: nt-sobe 0.9s var(--nt-ease) 0.4s forwards;
+}
+.nt-filtro {
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-family: var(--nt-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  color: #dbeafe;
+  background: rgb(255 255 255 / 0.05);
+  border: 1px solid rgb(147 197 253 / 0.3);
+  transition: background 0.25s, border-color 0.25s, color 0.25s, box-shadow 0.25s, transform 0.25s;
+}
+.nt-filtro:hover { border-color: var(--nt-accent); color: #fff; transform: translateY(-2px); }
+.nt-filtro[aria-pressed="true"] {
+  background: var(--nt-accent);
+  border-color: var(--nt-accent);
+  color: #fff;
+  box-shadow: 0 8px 22px -8px var(--nt-accent);
+}
+.nt-filtro:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+
+
+/* cards entram em sequência quando a fileira aparece */
+.nt-item {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s var(--nt-ease), transform 0.6s var(--nt-ease);
+  transition-delay: calc(var(--i, 0) * 80ms);
+}
+.nt-fileira.is-visivel .nt-item { opacity: 1; transform: none; }
+
+html[data-a11y-sem-animacao] :is(.nt-sub, .nt-filtros, .nt-item) { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .nt *,
+  .nt *::before,
+  .nt *::after { animation: none !important; transition-duration: 0.01s !important; }
+  .nt-sub, .nt-filtros, .nt-item { opacity: 1; transform: none; }
+}
+
+@media (max-width: 640px) {
+  .nt-trilho { grid-auto-columns: 78%; gap: 12px; }
+}
