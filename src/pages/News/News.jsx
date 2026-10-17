@@ -1,7 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import Button from "../../components/Button/Button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { normalizar } from "../../data/busca";
+import { ESPORTES, srcSetDaFoto } from "../../data/jogos";
+import "./News.css";
 
 const now = Date.now();
 
@@ -162,6 +165,14 @@ const noticias = [
   },
 ].map((noticia) => ({ ...noticia, link: LINKS[noticia.esporte] }));
 
+
+// uma fileira por esporte, na ordem do banner da home (mesmas cores dos títulos da home)
+const FILEIRAS = [
+  { esporte: "handebol", id: "handebol", cor: "#3b82f6" },
+  { esporte: "vôlei", id: "volei", cor: "#38bdf8" },
+  { esporte: "tênis de mesa", id: "tenis-de-mesa", cor: "#818cf8" },
+];
+
 // transforma a diferença de tempo em texto tipo "há 2 min", "há 3 h", "agora"
 function formatarTempo(data, agora) {
   const diffMs = agora - data;
@@ -176,15 +187,128 @@ function formatarTempo(data, agora) {
   return `há ${diffDias} ${diffDias === 1 ? "dia" : "dias"}`;
 }
 
+// fileira que rola para o lado, com setas para quem usa mouse
+function Fileira({ fileira, lista, agora }) {
+  const secaoRef = useRef(null);
+  const trilhoRef = useRef(null);
+  const [inicio, setInicio] = useState(true);
+  const [fim, setFim] = useState(false);
+  const [visivel, setVisivel] = useState(false);
+  const esporte = ESPORTES.find((e) => e.id === fileira.id);
+
+  function atualizarSetas() {
+    const t = trilhoRef.current;
+    if (!t) return;
+    setInicio(t.scrollLeft <= 4);
+    setFim(t.scrollLeft + t.clientWidth >= t.scrollWidth - 4);
+  }
+
+  useEffect(() => {
+    atualizarSetas();
+    window.addEventListener("resize", atualizarSetas);
+    return () => window.removeEventListener("resize", atualizarSetas);
+  }, [lista.length]);
+
+  // os cards entram em sequência quando a fileira aparece na tela
+  useEffect(() => {
+    const secao = secaoRef.current;
+    if (!secao || !("IntersectionObserver" in window)) {
+      setVisivel(true);
+      return;
+    }
+    const observador = new IntersectionObserver(
+      ([entrada]) => {
+        if (entrada.isIntersecting) {
+          setVisivel(true);
+          observador.disconnect();
+        }
+      },
+      { threshold: 0.15 }
+    );
+    observador.observe(secao);
+    return () => observador.disconnect();
+  }, []);
+
+  function rolar(direcao) {
+    const t = trilhoRef.current;
+    t?.scrollBy({ left: direcao * t.clientWidth * 0.9, behavior: "smooth" });
+  }
+
+  return (
+    <section
+      ref={secaoRef}
+      id={`noticias-${fileira.id}`}
+      aria-labelledby={`nt-${fileira.id}`}
+      style={{ "--nt-accent": fileira.cor }}
+      className={`nt-conteudo nt-fileira mt-12 sm:mt-14 ${visivel ? "is-visivel" : ""}`}
+    >
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+        <h2 id={`nt-${fileira.id}`} className="nt-fileira-titulo">
+          {esporte.nome}
+        </h2>
+        <div className="flex items-center gap-3">
+          <Link to={esporte.rota} className="nt-link-esporte">
+            VER PÁGINA DO ESPORTE <span aria-hidden="true">→</span>
+          </Link>
+          <div className="hidden sm:flex gap-2">
+            <button type="button" onClick={() => rolar(-1)} disabled={inicio} aria-label={`Notícias anteriores de ${fileira.esporte}`} className="nt-seta">
+              <ChevronLeft size={18} aria-hidden="true" />
+            </button>
+            <button type="button" onClick={() => rolar(1)} disabled={fim} aria-label={`Mais notícias de ${fileira.esporte}`} className="nt-seta">
+              <ChevronRight size={18} aria-hidden="true" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <ul ref={trilhoRef} onScroll={atualizarSetas} className="nt-trilho">
+        {lista.map((noticia, i) => (
+          <li key={noticia.id} className="flex nt-item" style={{ "--i": i }}>
+            <a
+              href={noticia.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${noticia.titulo} (abre em nova aba)`}
+              className="nt-card w-full"
+            >
+              <div className="nt-foto">
+                <img
+                  src={`${esporte.foto}-640.webp`}
+                  srcSet={srcSetDaFoto(esporte.foto)}
+                  sizes="300px"
+                  alt=""
+                  loading="lazy"
+                  className={esporte.foco}
+                />
+              </div>
+              <div className="nt-card-corpo">
+                <h3 className="nt-card-titulo">{noticia.titulo}</h3>
+                <p className="nt-card-rodape">
+                  <span>TAUBATÉ • {formatarTempo(noticia.publicadoEm, agora)}</span>
+                  <span aria-hidden="true" className="nt-ver-mais">
+                    VER MAIS <span className="nt-ver-mais-seta">→</span>
+                  </span>
+                </p>
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 function News() {
+  const [filtro, setFiltro] = useState("todos");
   const [agora, setAgora] = useState(new Date());
   // ?busca=... vem da pesquisa do header (digitada ou por voz)
   const [params] = useSearchParams();
   const busca = params.get("busca") || "";
   const termo = normalizar(busca);
-  const lista = termo
+  const encontradas = termo
     ? noticias.filter((n) => normalizar(`${n.esporte} ${n.titulo} ${n.resumo}`).includes(termo))
     : noticias;
+  const fileiras = FILEIRAS.filter((f) => filtro === "todos" || f.id === filtro);
 
   useEffect(() => {
     // atualiza o "tempo atrás" a cada 30 segundos, como um feed ao vivo
@@ -197,26 +321,42 @@ function News() {
 
   return (
     <>
-      <main className="w-full px-4 -mt-2 uppercase">
-        <section className="w-full text-white py-20 px-4">
-          <div className="w-full">
-            {/* título */}
-            <div className="mb-6">
-              <h1 className="text-5xl font-extrabold tracking-wider leading-none">
-                notícias
+      <div className="nt uppercase pb-16 sm:pb-20">
+        {/* topo: faixa que varre a tela na chegada, título, subtítulo e filtros */}
+        <section className="nt-topo pt-10 sm:pt-14 pb-2">
+          <div className="nt-varre" aria-hidden="true" />
+          <div className="nt-conteudo">
+            <div>
+              <h1 className="nt-titulo" aria-label="Notícias">
+                {"NOTÍCIAS".split("").map((letra, i) => (
+                  <span key={i} aria-hidden="true" className={`nt-letra ${i >= 4 ? "nt-letra-cor" : ""}`} style={{ "--i": i }}>
+                    {letra}
+                  </span>
+                ))}
               </h1>
+              <p className="nt-sub">ACOMPANHE AS PRINCIPAIS NOVIDADES DOS ESPORTES DE TAUBATÉ.</p>
 
-              <div className="w-32 h-1 bg-blue-500 rounded-full mt-4"></div>
-
-              <p className="text-gray-300 mt-4 text-sm md:text-base">
-                acompanhe as principais novidades dos esportes de taubaté
-              </p>
+              {/* filtros por esporte */}
+              <div className="nt-filtros" role="group" aria-label="Filtrar notícias por esporte">
+                {[{ id: "todos", nome: "TODOS", cor: "#2563eb" }, ...FILEIRAS.map((f) => ({ id: f.id, nome: ESPORTES.find((e) => e.id === f.id).nome, cor: f.cor }))].map((opcao) => (
+                  <button
+                    key={opcao.id}
+                    type="button"
+                    aria-pressed={filtro === opcao.id}
+                    onClick={() => setFiltro(opcao.id)}
+                    style={{ "--nt-accent": opcao.cor }}
+                    className="nt-filtro"
+                  >
+                    {opcao.nome}
+                  </button>
+                ))}
+              </div>
 
               {/* resultado da busca */}
               {busca && (
-                <p role="status" className="mt-4 text-sm text-blue-300 flex flex-wrap items-center gap-x-3 gap-y-1">
-                  {lista.length > 0
-                    ? `${lista.length} ${lista.length === 1 ? "notícia encontrada" : "notícias encontradas"} para "${busca}"`
+                <p role="status" className="mt-5 text-sm text-blue-200 flex flex-wrap items-center gap-x-3 gap-y-1">
+                  {encontradas.length > 0
+                    ? `${encontradas.length} ${encontradas.length === 1 ? "notícia encontrada" : "notícias encontradas"} para "${busca}"`
                     : `nenhuma notícia encontrada para "${busca}"`}
                   <Link to="/News" className="underline underline-offset-4 hover:text-white">
                     ver todas
@@ -224,55 +364,19 @@ function News() {
                 </p>
               )}
             </div>
-
-            {/* grade de notícias */}
-            <section className="grid 2xl:grid-cols-6 xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-2 gap-10">
-              {lista.map((noticia) => (
-                <div
-                  key={noticia.id}
-                  className="bg-black/20 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden hover:scale-105 duration-300"
-                >
-                  <img
-                    src={noticia.imagem}
-                    className="w-full h-52 object-cover"
-                    alt={noticia.esporte}
-                  />
-
-                  <div className="p-5">
-                    <span className="bg-blue-600 px-3 py-1 rounded-full text-xs font-bold">
-                      {noticia.esporte}
-                    </span>
-
-                    <h2 className="mt-4 text-lg font-bold leading-tight">
-                      {noticia.titulo}
-                    </h2>
-
-                    <p className="text-gray-300 text-sm mt-3">
-                      {noticia.resumo}
-                    </p>
-
-                    <p className="text-xs text-gray-400 mt-4 flex items-center gap-2">
-                      taubaté • {formatarTempo(noticia.publicadoEm, agora)}
-                    </p>
-
-                    <a
-                      href={noticia.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-4 inline-block uppercase text-blue-400 hover:text-blue-300 text-xs font-bold tracking-wide transition-colors duration-300"
-                    >
-                      ver mais →
-                    </a>
-                  </div>
-                </div>
-              ))}
-            </section>
           </div>
         </section>
-      </main>
+
+        {/* uma fileira para cada esporte */}
+        {fileiras.map((fileira) => {
+          const lista = encontradas.filter((n) => n.esporte === fileira.esporte);
+          if (lista.length === 0) return null;
+          return <Fileira key={fileira.id} fileira={fileira} lista={lista} agora={agora} />;
+        })}
+      </div>
 
       {/* BOTÃO DE ACESSIBILIDADE */}
-      <Button />
+      <Button espacoFinal={false} />
     </>
   );
 }
