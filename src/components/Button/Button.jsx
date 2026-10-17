@@ -1,196 +1,259 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { destinoDaBusca } from "../../data/busca";
+import { createPortal } from "react-dom";
 import {
   Accessibility,
   X,
-  Eye,
-  Type,
+  Contrast,
+  ALargeSmall,
   Link as LinkIcon,
-  Image,
+  ImageOff,
   PauseCircle,
   MousePointer2,
   Droplets,
   RotateCcw,
   BookOpen,
   ScanLine,
+  RectangleHorizontal,
   Palette,
   ZoomIn,
   Volume2,
   Mic,
+  Check,
 } from "lucide-react";
 
-function Button() {
-  const [menuAcessibilidade, setMenuAcessibilidade] = useState(false);
-  const [menuGrande, setMenuGrande] = useState(false);
+// ---- configuração salva (vale para todas as páginas) ----
+const CHAVE_STORAGE = "a11y-config";
 
-  const [contrasteAtivo, setContrasteAtivo] = useState(false);
-  const [linksDestacados, setLinksDestacados] = useState(false);
-  const [textoMaior, setTextoMaior] = useState(0); // 0 a 3
-  const [pararAnimacoes, setPararAnimacoes] = useState(false);
-  const [ocultarImagens, setOcultarImagens] = useState(false);
-  const [cursorGrande, setCursorGrande] = useState(false);
-  const [saturacao, setSaturacao] = useState(0); // 0,1,2
-  const [fonteDislexia, setFonteDislexia] = useState(false);
-  const [guiaLeitura, setGuiaLeitura] = useState(false);
-  const [mascaraLeitura, setMascaraLeitura] = useState(false);
-  const [ajusteCores, setAjusteCores] = useState(0); // 0,1,2,3
-  const [zoomPagina, setZoomPagina] = useState(0); // 0 a 3
-  const [leitorAtivo, setLeitorAtivo] = useState(false);
+const PADRAO = {
+  contraste: false,
+  links: false,
+  texto: 0, // 0 a 3
+  semAnimacao: false,
+  semImagens: false,
+  cursor: false,
+  saturacao: 0, // 0 a 2
+  dislexia: false,
+  guia: false,
+  mascara: false,
+  cores: 0, // 0 a 3
+  zoom: 0, // 0 a 3
+  leitor: false,
+  grande: false,
+};
+
+// nomes de cada nível, na ordem (o nível 0 é "desligado")
+const NIVEIS = {
+  texto: ["112%", "125%", "150%"],
+  zoom: ["115%", "130%", "150%"],
+  saturacao: ["BAIXA", "ALTA"],
+  cores: ["SÉPIA", "CINZA", "INVERTIDO"],
+};
+
+// atributo no <html> → chave da configuração (as regras estão no index.css)
+const ATRIBUTOS = {
+  "data-a11y-contraste": "contraste",
+  "data-a11y-links": "links",
+  "data-a11y-texto": "texto",
+  "data-a11y-sem-animacao": "semAnimacao",
+  "data-a11y-sem-imagens": "semImagens",
+  "data-a11y-cursor": "cursor",
+  "data-a11y-saturacao": "saturacao",
+  "data-a11y-dislexia": "dislexia",
+  "data-a11y-cores": "cores",
+  "data-a11y-zoom": "zoom",
+};
+
+function lerConfig() {
+  try {
+    const salvo = JSON.parse(localStorage.getItem(CHAVE_STORAGE));
+    return { ...PADRAO, ...salvo };
+  } catch {
+    return PADRAO;
+  }
+}
+
+// ---- voz em português para o leitor ----
+// sem escolher a voz, o Chrome/Edge no Windows usa a voz padrão do sistema (em inglês)
+let vozPortugues = null;
+function escolherVozPortugues() {
+  if (!("speechSynthesis" in window)) return null;
+  const vozes = window.speechSynthesis.getVoices();
+  const pt = vozes.filter((v) => /^pt([-_]|$)/i.test(v.lang));
+  const br = pt.filter((v) => /^pt[-_]br/i.test(v.lang));
+  // prefere as vozes mais naturais (Google / Microsoft Online), depois qualquer pt-BR, depois pt-PT
+  vozPortugues =
+    br.find((v) => /google|natural|online/i.test(v.name)) || br[0] || pt[0] || null;
+  return vozPortugues;
+}
+if (typeof window !== "undefined" && "speechSynthesis" in window) {
+  escolherVozPortugues();
+  window.speechSynthesis.addEventListener?.("voiceschanged", escolherVozPortugues);
+}
+
+function falar(texto) {
+  if (!("speechSynthesis" in window) || !texto) return;
+  window.speechSynthesis.cancel();
+  // o site é todo em MAIÚSCULAS: em minúsculas a voz lê palavras, não soletra siglas
+  const frase = texto.replace(/\s+/g, " ").trim().toLocaleLowerCase("pt-BR");
+  const fala = new SpeechSynthesisUtterance(frase);
+  const voz = vozPortugues || escolherVozPortugues();
+  if (voz) fala.voice = voz;
+  fala.lang = voz?.lang || "pt-BR";
+  fala.rate = 1;
+  window.speechSynthesis.speak(fala);
+}
+
+// elementos que o leitor de texto lê como um bloco
+const BLOCOS_LEITURA =
+  "a, button, h1, h2, h3, h4, h5, h6, p, li, label, td, th, figcaption, img, input, textarea, select";
+
+function textoDoElemento(el) {
+  if (el.tagName === "IMG") return el.alt;
+  if (["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName))
+    return el.getAttribute("aria-label") || el.value || el.placeholder;
+  return el.getAttribute("aria-label") || el.innerText || el.textContent;
+}
+
+function Button({ espacoFinal = true }) {
+  const [menuAberto, setMenuAberto] = useState(false);
+  const [config, setConfig] = useState(lerConfig);
   const [buscaVozAtiva, setBuscaVozAtiva] = useState(false);
+  // mensagem curta no menu (ex.: "ouvindo...", "não ouvi nada")
+  const [aviso, setAviso] = useState("");
+  const navigate = useNavigate();
 
+  const gatilhoRef = useRef(null);
+  const fecharRef = useRef(null);
+  const painelRef = useRef(null);
   const guiaRef = useRef(null);
   const mascaraTopoRef = useRef(null);
   const mascaraBaixoRef = useRef(null);
   const reconhecimentoRef = useRef(null);
 
+  const alternar = (chave) => setConfig((c) => ({ ...c, [chave]: !c[chave] }));
+  const proximoNivel = (chave) =>
+    setConfig((c) => ({ ...c, [chave]: (c[chave] + 1) % (NIVEIS[chave].length + 1) }));
+
+  // ---- aplica a configuração no <html> e salva ----
+  useEffect(() => {
+    const html = document.documentElement;
+    for (const [atributo, chave] of Object.entries(ATRIBUTOS)) {
+      const valor = config[chave];
+      if (valor) html.setAttribute(atributo, valor === true ? "" : String(valor));
+      else html.removeAttribute(atributo);
+    }
+    try {
+      localStorage.setItem(CHAVE_STORAGE, JSON.stringify(config));
+    } catch {
+      // sem storage (aba privada etc.): segue só nesta página
+    }
+  }, [config]);
+
   // ---- atalho de teclado ----
   useEffect(() => {
     function handleKeyDown(e) {
-      const tecla = e.key?.toLowerCase();
-      if (e.ctrlKey && tecla === "l") {
+      if (e.ctrlKey && e.key?.toLowerCase() === "l") {
         e.preventDefault();
-        setMenuAcessibilidade((aberto) => !aberto);
+        setMenuAberto((aberto) => !aberto);
       }
-      if (e.key === "Escape") setMenuAcessibilidade(false);
+      if (e.key === "Escape") setMenuAberto(false);
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // ---- CONTRASTE: classes Tailwind reais no <html> ----
+  // ---- menu aberto: trava o foco no menu e devolve ao fechar ----
   useEffect(() => {
     const html = document.documentElement;
-    // usa variantes arbitrárias do Tailwind para atingir TODOS os elementos filhos
-    html.classList.toggle("bg-black", contrasteAtivo);
-    html.classList.toggle("[&_*]:!bg-black", contrasteAtivo);
-    html.classList.toggle("[&_*]:!text-yellow-300", contrasteAtivo);
-    html.classList.toggle("[&_*]:!border-yellow-300", contrasteAtivo);
-    html.classList.toggle("[&_a]:!underline", contrasteAtivo);
-    html.classList.toggle("[&_img]:grayscale", contrasteAtivo);
-    html.classList.toggle("[&_svg]:grayscale", contrasteAtivo);
-  }, [contrasteAtivo]);
+    const root = document.getElementById("root");
+    html.toggleAttribute("data-a11y-menu-aberto", menuAberto);
+    if (root) root.inert = menuAberto;
 
-  // ---- LINKS DESTACADOS ----
-  useEffect(() => {
-    const html = document.documentElement;
-    html.classList.toggle("[&_a]:!bg-yellow-300", linksDestacados);
-    html.classList.toggle("[&_a]:!text-black", linksDestacados);
-    html.classList.toggle("[&_a]:!underline", linksDestacados);
-    html.classList.toggle("[&_a]:!font-bold", linksDestacados);
-  }, [linksDestacados]);
-
-  // ---- TEXTO MAIOR (classes de tamanho reais do Tailwind) ----
-  useEffect(() => {
-    const html = document.documentElement;
-    html.classList.remove("text-[112.5%]", "text-[125%]", "text-[150%]");
-    if (textoMaior === 1) html.classList.add("text-[112.5%]");
-    if (textoMaior === 2) html.classList.add("text-[125%]");
-    if (textoMaior === 3) html.classList.add("text-[150%]");
-  }, [textoMaior]);
-
-  // ---- PARAR ANIMAÇÕES ----
-  useEffect(() => {
-    const html = document.documentElement;
-    html.classList.toggle("[&_*]:!animate-none", pararAnimacoes);
-    html.classList.toggle("[&_*]:!transition-none", pararAnimacoes);
-  }, [pararAnimacoes]);
-
-  // ---- OCULTAR IMAGENS ----
-  useEffect(() => {
-    document.documentElement.classList.toggle(
-      "[&_img]:invisible",
-      ocultarImagens
-    );
-  }, [ocultarImagens]);
-
-  // ---- CURSOR (única exceção pequena: cursor customizado via arbitrary value do próprio Tailwind) ----
-  useEffect(() => {
-    document.documentElement.classList.toggle(
-      "cursor-[url('data:image/svg+xml;utf8,%3Csvg_xmlns=%27http://www.w3.org/2000/svg%27_width=%2740%27_height=%2740%27_viewBox=%270_0_24_24%27%3E%3Cpath_fill=%27black%27_stroke=%27white%27_stroke-width=%271%27_d=%27M4_2l14_8-6_2-2_6z%27/%3E%3C/svg%3E'),_auto]",
-      cursorGrande
-    );
-  }, [cursorGrande]);
-
-  // ---- SATURAÇÃO (utilitários de filtro nativos do Tailwind) ----
-  useEffect(() => {
-    const html = document.documentElement;
-    html.classList.remove("saturate-50", "saturate-200");
-    if (saturacao === 1) html.classList.add("saturate-50");
-    if (saturacao === 2) html.classList.add("saturate-200");
-  }, [saturacao]);
-
-  // ---- FONTE PARA DISLEXIA (arbitrary value, sem @font-face customizado) ----
-  useEffect(() => {
-    document.documentElement.classList.toggle(
-      "[&_*]:!font-[Comic_Sans_MS,_Verdana,_sans-serif]",
-      fonteDislexia
-    );
-    document.documentElement.classList.toggle("tracking-wide", fonteDislexia);
-  }, [fonteDislexia]);
-
-  // ---- AJUSTE DE CORES (filtros nativos do Tailwind, empilháveis) ----
-  useEffect(() => {
-    const html = document.documentElement;
-    html.classList.remove("sepia", "grayscale", "invert", "hue-rotate-180");
-    if (ajusteCores === 1) html.classList.add("sepia");
-    if (ajusteCores === 2) html.classList.add("grayscale");
-    if (ajusteCores === 3) html.classList.add("invert", "hue-rotate-180");
-  }, [ajusteCores]);
-
-  // ---- ZOOM: exceção real, precisa de valor numérico livre (0 a 3), sem classe fixa do Tailwind ----
-  useEffect(() => {
-    const niveis = ["100%", "115%", "130%", "150%"];
-    document.documentElement.style.fontSize = niveis[zoomPagina];
-  }, [zoomPagina]);
-
-  // ---- GUIA DE LEITURA: exceção real, posição calculada a cada movimento do mouse ----
-  useEffect(() => {
-    if (!guiaLeitura) return;
-    function mover(e) {
-      if (guiaRef.current) guiaRef.current.style.top = `${e.clientY}px`;
+    if (menuAberto) {
+      fecharRef.current?.focus();
+    } else if (painelRef.current?.contains(document.activeElement)) {
+      gatilhoRef.current?.focus();
     }
-    window.addEventListener("mousemove", mover);
-    return () => window.removeEventListener("mousemove", mover);
-  }, [guiaLeitura]);
+  }, [menuAberto]);
 
-  // ---- MÁSCARA DE LEITURA: mesma exceção (posição do mouse) ----
+  useEffect(
+    () => () => {
+      // ao trocar de página o menu é desmontado: não deixa a página travada
+      const root = document.getElementById("root");
+      if (root) root.inert = false;
+      document.documentElement.removeAttribute("data-a11y-menu-aberto");
+    },
+    []
+  );
+
+  // ---- guia e máscara de leitura: seguem o mouse ou o dedo ----
   useEffect(() => {
-    if (!mascaraLeitura) return;
-    function mover(e) {
-      const altura = 120;
+    if (!config.guia && !config.mascara) return;
+    const meiaJanela = 60;
+    function mover(y) {
+      if (guiaRef.current) guiaRef.current.style.top = `${y - 18}px`;
       if (mascaraTopoRef.current)
-        mascaraTopoRef.current.style.height = `${e.clientY - altura / 2}px`;
+        mascaraTopoRef.current.style.height = `${Math.max(0, y - meiaJanela)}px`;
       if (mascaraBaixoRef.current)
-        mascaraBaixoRef.current.style.top = `${e.clientY + altura / 2}px`;
+        mascaraBaixoRef.current.style.top = `${y + meiaJanela}px`;
     }
-    window.addEventListener("mousemove", mover);
-    return () => window.removeEventListener("mousemove", mover);
-  }, [mascaraLeitura]);
+    const aoMover = (e) => mover(e.clientY);
+    mover(window.innerHeight / 2);
+    window.addEventListener("pointermove", aoMover);
+    return () => window.removeEventListener("pointermove", aoMover);
+  }, [config.guia, config.mascara]);
 
-  // ---- LEITOR DE TEXTO ----
+  // ---- leitor de texto: lê o que é clicado ou focado pelo teclado ----
   useEffect(() => {
-    if (!leitorAtivo) return;
-    function lerAoClicar(e) {
-      const texto = e.target.innerText || e.target.textContent;
-      if (!texto || !texto.trim()) return;
-      window.speechSynthesis.cancel();
-      const fala = new SpeechSynthesisUtterance(texto.trim());
-      fala.lang = "pt-BR";
-      window.speechSynthesis.speak(fala);
+    if (!config.leitor) return;
+    function ler(el) {
+      if (!el || el.closest(".a11y-ui")) return;
+      const bloco = el.closest(BLOCOS_LEITURA);
+      const texto = bloco ? textoDoElemento(bloco) : el.innerText;
+      // clique num container grande (sem bloco de texto) não lê a página toda
+      if (!bloco && texto && texto.length > 300) return;
+      falar(texto);
     }
-    document.addEventListener("click", lerAoClicar, true);
+    const aoClicar = (e) => ler(e.target);
+    const aoFocar = (e) => e.target.matches?.(":focus-visible") && ler(e.target);
+    document.addEventListener("click", aoClicar, true);
+    document.addEventListener("focusin", aoFocar);
     return () => {
-      document.removeEventListener("click", lerAoClicar, true);
-      window.speechSynthesis.cancel();
+      document.removeEventListener("click", aoClicar, true);
+      document.removeEventListener("focusin", aoFocar);
+      window.speechSynthesis?.cancel();
     };
-  }, [leitorAtivo]);
+  }, [config.leitor]);
 
-  // ---- BUSCA POR VOZ ----
+  function alternarLeitor() {
+    if (!("speechSynthesis" in window)) {
+      setAviso("SEU NAVEGADOR NÃO TEM LEITOR DE TEXTO. TENTE O GOOGLE CHROME OU O EDGE.");
+      return;
+    }
+    if (!config.leitor) {
+      if (!escolherVozPortugues()) {
+        setAviso(
+          "NÃO ACHEI VOZ EM PORTUGUÊS NO SEU APARELHO. NO WINDOWS: CONFIGURAÇÕES > HORA E IDIOMA > FALA > ADICIONAR VOZES > PORTUGUÊS (BRASIL)."
+        );
+      } else {
+        setAviso("");
+      }
+      falar("Leitor de texto ativado. Clique em um texto para ouvir.");
+    } else {
+      setAviso("");
+    }
+    alternar("leitor");
+  }
+
+  // ---- busca por voz ----
   function alternarBuscaPorVoz() {
     const SpeechRecognitionAPI =
       window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognitionAPI) {
-      alert("Seu navegador não suporta busca por voz. Tente o Google Chrome.");
+      setAviso("SEU NAVEGADOR NÃO TEM BUSCA POR VOZ. USE O GOOGLE CHROME OU O EDGE.");
       return;
     }
 
@@ -207,173 +270,326 @@ function Button() {
 
     reconhecimento.onresult = (event) => {
       const texto = event.results[0][0].transcript;
+      setAviso(`VOCÊ DISSE: "${texto.toUpperCase()}"`);
+      const setter = Object.getOwnPropertyDescriptor(
+        window.HTMLInputElement.prototype,
+        "value"
+      ).set;
       const campos = document.querySelectorAll('input[placeholder*="pesquis" i]');
       campos.forEach((campo) => {
-        const setter = Object.getOwnPropertyDescriptor(
-          window.HTMLInputElement.prototype,
-          "value"
-        ).set;
         setter.call(campo, texto);
         campo.dispatchEvent(new Event("input", { bubbles: true }));
       });
+      // fecha o menu e já leva para a página que responde à busca
+      setMenuAberto(false);
+      const destino = destinoDaBusca(texto);
+      if (destino) navigate(destino);
     };
 
-    reconhecimento.onerror = () => setBuscaVozAtiva(false);
+    const ERROS = {
+      "not-allowed": "PERMITA O USO DO MICROFONE NO NAVEGADOR (ÍCONE DO CADEADO NA BARRA DE ENDEREÇO).",
+      "service-not-allowed": "PERMITA O USO DO MICROFONE NO NAVEGADOR (ÍCONE DO CADEADO NA BARRA DE ENDEREÇO).",
+      "no-speech": "NÃO OUVI NADA. TOQUE EM BUSCA POR VOZ E FALE LOGO EM SEGUIDA.",
+      "audio-capture": "NENHUM MICROFONE ENCONTRADO NESTE APARELHO.",
+      network: "A BUSCA POR VOZ PRECISA DE INTERNET. CONFIRA SUA CONEXÃO.",
+    };
+    reconhecimento.onerror = (e) => {
+      if (e.error !== "aborted") setAviso(ERROS[e.error] || "NÃO DEU PARA OUVIR. TENTE DE NOVO.");
+      setBuscaVozAtiva(false);
+    };
     reconhecimento.onend = () => setBuscaVozAtiva(false);
 
-    reconhecimento.start();
+    try {
+      reconhecimento.start();
+    } catch {
+      setAviso("NÃO DEU PARA LIGAR O MICROFONE. TENTE DE NOVO.");
+      return;
+    }
     reconhecimentoRef.current = reconhecimento;
+    setAviso("OUVINDO... DIGA O QUE VOCÊ PROCURA (EX.: \"VÔLEI\", \"CONTATO\").");
     setBuscaVozAtiva(true);
   }
 
   function redefinirConfiguracoes() {
-    setContrasteAtivo(false);
-    setMenuGrande(false);
-    setLinksDestacados(false);
-    setTextoMaior(0);
-    setPararAnimacoes(false);
-    setOcultarImagens(false);
-    setCursorGrande(false);
-    setSaturacao(0);
-    setFonteDislexia(false);
-    setGuiaLeitura(false);
-    setMascaraLeitura(false);
-    setAjusteCores(0);
-    setZoomPagina(0);
-    setLeitorAtivo(false);
+    setConfig(PADRAO);
+    setAviso("");
     if (buscaVozAtiva) alternarBuscaPorVoz();
   }
 
+  const totalAtivos =
+    Object.keys(PADRAO).filter((k) => k !== "grande" && config[k]).length +
+    (buscaVozAtiva ? 1 : 0);
+  const g = config.grande;
+
+  const secoes = [
+    {
+      titulo: "TEXTO E LEITURA",
+      itens: [
+        { chave: "texto", icon: ALargeSmall, titulo: "TEXTO MAIOR" },
+        { chave: "zoom", icon: ZoomIn, titulo: "ZOOM DA PÁGINA" },
+        { chave: "dislexia", icon: BookOpen, titulo: "FONTE PARA DISLEXIA" },
+        { chave: "leitor", icon: Volume2, titulo: "LEITOR DE TEXTO", acao: "leitor" },
+        { chave: "guia", icon: ScanLine, titulo: "GUIA DE LEITURA" },
+        { chave: "mascara", icon: RectangleHorizontal, titulo: "MÁSCARA DE LEITURA" },
+      ],
+    },
+    {
+      titulo: "CORES",
+      itens: [
+        { chave: "contraste", icon: Contrast, titulo: "CONTRASTE +" },
+        { chave: "saturacao", icon: Droplets, titulo: "SATURAÇÃO" },
+        { chave: "cores", icon: Palette, titulo: "AJUSTE DE CORES" },
+        { chave: "links", icon: LinkIcon, titulo: "LINKS DESTACADOS" },
+      ],
+    },
+    {
+      titulo: "NAVEGAÇÃO",
+      itens: [
+        { chave: "semImagens", icon: ImageOff, titulo: "OCULTAR IMAGENS" },
+        { chave: "semAnimacao", icon: PauseCircle, titulo: "PARAR ANIMAÇÕES" },
+        { chave: "cursor", icon: MousePointer2, titulo: "CURSOR GRANDE" },
+        {
+          chave: "buscaVoz",
+          icon: Mic,
+          titulo: buscaVozAtiva ? "OUVINDO..." : "BUSCA POR VOZ",
+          ativo: buscaVozAtiva,
+          acao: "buscaVoz",
+        },
+      ],
+    },
+  ];
+
   return (
-    <main className="max-w-7xl mx-auto px-4 pb-20 text-white uppercase">
-      {/* guia de leitura */}
-      {guiaLeitura && (
-        <div
-          ref={guiaRef}
-          className="fixed left-0 w-full h-9 bg-yellow-300/40 border-y-2 border-yellow-400 pointer-events-none z-9998"
-        />
-      )}
+    <>
+      {/* espaço no fim da página (antes do rodapé); a home não usa */}
+      {espacoFinal && <div aria-hidden="true" className="h-7.5" />}
 
-      {/* máscara de leitura */}
-      {mascaraLeitura && (
-        <>
+      {createPortal(
+        <div className="a11y-ui text-white uppercase">
+          {/* guia de leitura */}
+          {config.guia && (
+            <div
+              ref={guiaRef}
+              className="fixed left-0 w-full h-9 bg-yellow-300/30 border-y-2 border-yellow-400 pointer-events-none z-9990"
+            />
+          )}
+
+          {/* máscara de leitura: escurece tudo menos uma faixa */}
+          {config.mascara && (
+            <>
+              <div
+                ref={mascaraTopoRef}
+                className="fixed top-0 left-0 w-full bg-black/80 pointer-events-none z-9990"
+              />
+              <div
+                ref={mascaraBaixoRef}
+                className="fixed bottom-0 left-0 w-full bg-black/80 pointer-events-none z-9990"
+              />
+            </>
+          )}
+
+          {/* botão de acessibilidade */}
+          <button
+            ref={gatilhoRef}
+            onClick={() => setMenuAberto(true)}
+            aria-label="Abrir menu de acessibilidade (Ctrl + L)"
+            aria-expanded={menuAberto}
+            aria-controls="menu-acessibilidade"
+            className="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-9991 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-blue-700 ring-4 ring-blue-950/60 shadow-2xl flex items-center justify-center hover:bg-blue-600 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-300"
+          >
+            <Accessibility className="size-5 sm:size-[22px]" />
+            {totalAtivos > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-yellow-300 text-black text-[0.625rem] font-bold grid place-items-center">
+                {totalAtivos}
+              </span>
+            )}
+          </button>
+
+          {/* fundo escuro */}
           <div
-            ref={mascaraTopoRef}
-            className="fixed top-0 left-0 w-full bg-black/80 pointer-events-none z-9998"
+            onClick={() => setMenuAberto(false)}
+            className={`fixed inset-0 bg-black/55 z-9995 transition-opacity duration-300 ${
+              menuAberto ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
           />
-          <div
-            ref={mascaraBaixoRef}
-            className="fixed bottom-0 left-0 w-full bg-black/80 pointer-events-none z-9998"
-            style={{ height: "100vh" }}
-          />
-        </>
-      )}
 
-      {/* botão de acessibilidade */}
-      <button
-        onClick={() => setMenuAcessibilidade(true)}
-        className="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-50 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-blue-800 border-4 border-blue-800 shadow-2xl flex items-center justify-center hover:bg-blue-700 transition-all"
-      >
-        <Accessibility size={20} className="sm:hidden" />
-        <Accessibility size={22} className="hidden sm:block" />
-      </button>
-
-      {menuAcessibilidade && (
-        <div
-          onClick={() => setMenuAcessibilidade(false)}
-          className="fixed inset-0 bg-black/50 z-40"
-        />
-      )}
-
-      <aside
-        className={`fixed top-0 right-0 h-screen w-[85%] max-w-85 ${
-          menuGrande ? "sm:w-125 sm:max-w-125" : "sm:w-85"
-        } bg-[#171c2d] z-50 shadow-2xl transition-all duration-300 ${
-          menuAcessibilidade ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        <div className="bg-blue-950">
-          <div className="p-4 sm:p-5">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <h2 className="text-base sm:text-lg font-bold flex items-center gap-2 uppercase">
-                  <Accessibility size={22} className="shrink-0" />
-                  MENU ACESSIBILIDADE
-                </h2>
-                <p className="text-[11px] sm:text-xs text-gray-300 mt-1 uppercase">
-                  ATALHO PARA ABRIR O MENU:
-                  <span className="font-semibold"> CTRL + L</span>
-                </p>
+          <aside
+            id="menu-acessibilidade"
+            ref={painelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menu de acessibilidade"
+            inert={!menuAberto}
+            className={`fixed top-0 right-0 h-dvh w-[88%] flex flex-col bg-[#131829] scheme-dark z-9996 shadow-2xl transition-[translate,max-width] duration-300 ${
+              g ? "max-w-[23rem]" : "max-w-[18rem]"
+            } ${menuAberto ? "translate-x-0" : "translate-x-full"}`}
+          >
+            {/* cabeçalho */}
+            <div className="shrink-0 bg-blue-950">
+              <div className="flex items-start justify-between gap-3 p-4 sm:p-5">
+                <div className="min-w-0">
+                  <h2 className={`font-bold flex items-center gap-2 whitespace-nowrap ${g ? "text-xl" : "text-[0.9375rem]"}`}>
+                    <Accessibility className="size-[22px] shrink-0" />
+                    MENU ACESSIBILIDADE
+                  </h2>
+                  <p className="text-[0.6875rem] text-blue-200/70 mt-1.5 flex items-center gap-1.5">
+                    ATALHO
+                    <kbd className="font-sans font-semibold text-white bg-white/10 border border-white/15 rounded-md px-1.5 py-0.5">
+                      CTRL + L
+                    </kbd>
+                  </p>
+                </div>
+                <button
+                  ref={fecharRef}
+                  onClick={() => setMenuAberto(false)}
+                  aria-label="Fechar menu de acessibilidade"
+                  className="size-10 rounded-full border border-white/30 flex items-center justify-center hover:bg-white hover:text-blue-950 transition-colors shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-300"
+                >
+                  <X size={18} />
+                </button>
               </div>
-              <button
-                onClick={() => setMenuAcessibilidade(false)}
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-white flex items-center justify-center hover:bg-white hover:text-blue-950 transition shrink-0"
+
+              <div className="flex items-center justify-between gap-3 px-4 sm:px-5 py-3 border-t border-white/10">
+                <span id="rotulo-menu-grande" className={`font-semibold ${g ? "text-sm" : "text-xs"}`}>
+                  MENU SUPERDIMENSIONADO
+                </span>
+                <button
+                  role="switch"
+                  aria-checked={g}
+                  aria-labelledby="rotulo-menu-grande"
+                  onClick={() => alternar("grande")}
+                  className={`relative w-11 h-6 rounded-full transition-colors shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-300 ${
+                    g ? "bg-blue-500" : "bg-white/20"
+                  }`}
+                >
+                  <span
+                    className={`absolute top-1 left-1 size-4 rounded-full bg-white shadow transition-transform duration-200 ${
+                      g ? "translate-x-5" : ""
+                    }`}
+                  />
+                </button>
+              </div>
+            </div>
+
+            {/* opções */}
+            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain [scrollbar-width:thin] [scrollbar-color:#000_transparent] px-4 sm:px-5 py-4 space-y-4">
+              {secoes.map((secao) => (
+                <section key={secao.titulo} aria-label={secao.titulo}>
+                  <h3 className={`font-semibold tracking-[0.14em] text-blue-200/60 mb-2.5 ${g ? "text-xs" : "text-[0.625rem]"}`}>
+                    {secao.titulo}
+                  </h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    {secao.itens.map((item) => (
+                      <Card
+                        key={item.chave}
+                        icon={item.icon}
+                        titulo={item.titulo}
+                        grande={g}
+                        niveis={NIVEIS[item.chave]}
+                        nivel={NIVEIS[item.chave] ? config[item.chave] : undefined}
+                        ativo={item.ativo ?? Boolean(config[item.chave])}
+                        onClick={() => {
+                          if (item.acao === "leitor") alternarLeitor();
+                          else if (item.acao === "buscaVoz") alternarBuscaPorVoz();
+                          else if (NIVEIS[item.chave]) proximoNivel(item.chave);
+                          else alternar(item.chave);
+                        }}
+                      />
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+
+            {/* aviso (ouvindo, erro do microfone, voz em português...) */}
+            {aviso && (
+              <p
+                role="status"
+                className="shrink-0 mx-4 sm:mx-5 mb-2 rounded-xl border border-blue-500/40 bg-blue-600/15 px-3 py-2 text-[0.6875rem] leading-snug text-blue-100"
               >
-                <X size={18} />
+                {aviso}
+              </p>
+            )}
+
+            {/* rodapé fixo */}
+            <div className="shrink-0 border-t border-white/10 bg-[#131829] px-4 sm:px-5 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <button
+                onClick={redefinirConfiguracoes}
+                disabled={totalAtivos === 0}
+                className={`w-full rounded-xl border border-white/15 bg-white/5 hover:bg-blue-600 hover:border-blue-600 disabled:opacity-40 disabled:hover:bg-white/5 disabled:hover:border-white/15 transition-colors font-bold flex items-center justify-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-300 ${
+                  g ? "h-14 text-sm" : "h-12 text-xs"
+                }`}
+              >
+                <RotateCcw size={16} className="shrink-0" />
+                REDEFINIR CONFIGURAÇÕES
+                {totalAtivos > 0 && (
+                  <span className="text-blue-200/80 font-semibold">({totalAtivos})</span>
+                )}
               </button>
             </div>
-          </div>
-
-          <div className="flex items-center justify-between px-4 sm:px-5 py-3 border-t border-blue-800">
-            <span className="text-xs sm:text-sm font-semibold uppercase">
-              MENU SUPERDIMENSIONADO
-            </span>
-            <button
-              onClick={() => setMenuGrande(!menuGrande)}
-              className={`relative w-12 h-6 rounded-full transition-colors shrink-0 ${
-                menuGrande ? "bg-blue-600" : "bg-gray-500"
-              }`}
-            >
-              <span
-                className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform duration-300 ${
-                  menuGrande ? "translate-x-6" : ""
-                }`}
-              />
-            </button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 pl-4 sm:pl-5 pr-6 sm:pr-8 py-4 sm:py-5 overflow-y-auto h-[calc(100vh-96px)] sm:h-[calc(100vh-90px)]">
-          <Card icon={<Eye size={20} />} titulo="CONTRASTE +" ativo={contrasteAtivo} onClick={() => setContrasteAtivo((v) => !v)} />
-          <Card icon={<LinkIcon size={20} />} titulo="LINKS DESTACADOS" ativo={linksDestacados} onClick={() => setLinksDestacados((v) => !v)} />
-          <Card icon={<Type size={20} />} titulo={textoMaior > 0 ? `TEXTO MAIOR (${textoMaior}/3)` : "TEXTO MAIOR"} ativo={textoMaior > 0} onClick={() => setTextoMaior((v) => (v + 1) % 4)} />
-          <Card icon={<PauseCircle size={20} />} titulo="PARAR ANIMAÇÕES" ativo={pararAnimacoes} onClick={() => setPararAnimacoes((v) => !v)} />
-          <Card icon={<Image size={20} />} titulo="OCULTAR IMAGENS" ativo={ocultarImagens} onClick={() => setOcultarImagens((v) => !v)} />
-          <Card icon={<MousePointer2 size={20} />} titulo="CURSOR" ativo={cursorGrande} onClick={() => setCursorGrande((v) => !v)} />
-          <Card icon={<Droplets size={20} />} titulo="SATURAÇÃO" ativo={saturacao > 0} onClick={() => setSaturacao((v) => (v + 1) % 3)} />
-          <Card icon={<BookOpen size={20} />} titulo="FONTE PARA DISLEXIA" ativo={fonteDislexia} onClick={() => setFonteDislexia((v) => !v)} />
-          <Card icon={<ScanLine size={20} />} titulo="GUIA DE LEITURA" ativo={guiaLeitura} onClick={() => setGuiaLeitura((v) => !v)} />
-          <Card icon={<Image size={20} />} titulo="MÁSCARA DE LEITURA" ativo={mascaraLeitura} onClick={() => setMascaraLeitura((v) => !v)} />
-          <Card icon={<Palette size={20} />} titulo="AJUSTE DE CORES" ativo={ajusteCores > 0} onClick={() => setAjusteCores((v) => (v + 1) % 4)} />
-          <Card icon={<ZoomIn size={20} />} titulo={zoomPagina > 0 ? `ZOOM (${zoomPagina}/3)` : "ZOOM DA PÁGINA"} ativo={zoomPagina > 0} onClick={() => setZoomPagina((v) => (v + 1) % 4)} />
-          <Card icon={<Volume2 size={20} />} titulo="LEITOR DE TEXTO" ativo={leitorAtivo} onClick={() => setLeitorAtivo((v) => !v)} />
-          <Card icon={<Mic size={20} />} titulo="BUSCA POR VOZ" ativo={buscaVozAtiva} onClick={alternarBuscaPorVoz} />
-
-          <button
-            onClick={redefinirConfiguracoes}
-            className="col-span-2 mt-1 mb-3 sm:mb-4 min-h-12 sm:min-h-14 py-2 px-3 rounded-xl border border-gray-600 bg-[#1f2436] hover:bg-blue-600 transition font-bold uppercase text-xs sm:text-sm flex items-center justify-center gap-2 text-center leading-tight"
-          >
-            <RotateCcw size={18} className="shrink-0" />
-            <span>redefinir configurações</span>
-          </button>
-        </div>
-      </aside>
-    </main>
+          </aside>
+        </div>,
+        document.body
+      )}
+    </>
   );
 }
 
-function Card({ icon, titulo, ativo, onClick }) {
+function Card({ icon: Icone, titulo, ativo, onClick, niveis, nivel, grande }) {
+  const nomeNivel = niveis && nivel > 0 ? niveis[nivel - 1] : null;
+
   return (
     <button
       onClick={onClick}
-      className={`h-20 sm:h-24 rounded-xl border transition flex flex-col justify-center items-center gap-1.5 sm:gap-1.5 p-2 ${
-        ativo ? "bg-blue-600 border-blue-600" : "border-gray-600 bg-[#1f2436] hover:bg-blue-600"
+      aria-pressed={ativo}
+      aria-label={nomeNivel ? `${titulo}: ${nomeNivel}` : titulo}
+      className={`group relative rounded-2xl border px-2 text-center flex flex-col items-center justify-center transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-300 ${
+        grande ? "min-h-28 gap-2 py-3.5" : "min-h-[4.5rem] gap-1.5 py-2.5"
+      } ${
+        ativo
+          ? "bg-blue-600/20 border-blue-500"
+          : "bg-white/[0.035] border-white/10 hover:bg-white/[0.07] hover:border-white/25"
       }`}
     >
-      <div className="sm:scale-90">{icon}</div>
-      <span className="text-[10px] sm:text-[10px] font-semibold text-center px-1 sm:px-2 leading-tight">
+      {/* selo de ativo (opções liga/desliga) */}
+      {ativo && !niveis && (
+        <span className="absolute top-2 right-2 size-4 rounded-full bg-blue-500 grid place-items-center">
+          <Check size={11} strokeWidth={3} />
+        </span>
+      )}
+
+      <span
+        className={`rounded-xl grid place-items-center transition-colors ${
+          grande ? "size-10" : "size-8"
+        } ${ativo ? "bg-blue-600 text-white" : "bg-white/[0.06] text-white/85 group-hover:text-white"}`}
+      >
+        <Icone className={grande ? "size-5" : "size-4"} />
+      </span>
+
+      <span className={`font-semibold leading-tight tracking-wide ${grande ? "text-sm" : "text-[0.6875rem]"}`}>
         {titulo}
       </span>
+
+      {/* níveis: pontinhos + nome do nível atual */}
+      {niveis && (
+        <span className="flex items-center gap-1.5" aria-hidden="true">
+          <span className="flex gap-1">
+            {niveis.map((_, i) => (
+              <span
+                key={i}
+                className={`h-1 rounded-full transition-all ${
+                  i < nivel ? "w-3 bg-blue-400" : "w-1.5 bg-white/20"
+                }`}
+              />
+            ))}
+          </span>
+          {nomeNivel && (
+            <span className={`font-semibold text-blue-300 ${grande ? "text-xs" : "text-[0.5625rem]"}`}>
+              {nomeNivel}
+            </span>
+          )}
+        </span>
+      )}
     </button>
   );
 }
