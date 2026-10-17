@@ -1,18 +1,40 @@
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { destinoDaBusca } from "../../data/busca";
+import { useEffect, useRef, useState } from "react";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [sportsOpen, setSportsOpen] = useState(false);
+  const topoRef = useRef(null);
+  const navigate = useNavigate();
+
+  // busca: Enter no campo leva para a página certa (esporte, contato, notícias...)
+  function buscar(e) {
+    e.preventDefault();
+    const campo = [...e.currentTarget.querySelectorAll("input")].find((c) => c.offsetParent !== null);
+    const destino = destinoDaBusca(campo?.value);
+    if (!destino) return;
+    navigate(destino);
+    campo.blur();
+  }
+
+  // guarda a altura do header em --altura-header (o banner da home ocupa o resto da tela)
+  useEffect(() => {
+    const topo = topoRef.current;
+    if (!topo) return;
+    const medir = () =>
+      document.documentElement.style.setProperty("--altura-header", `${topo.offsetHeight}px`);
+    medir();
+    const observador = new ResizeObserver(medir);
+    observador.observe(topo);
+    return () => observador.disconnect();
+  }, []);
 
   return (
-    <div className="sticky top-0 z-50 text-white uppercase bg-linear-to-r from-slate-950 via-blue-950 to-slate-900">
+    <div ref={topoRef} className="sticky top-0 z-50 text-white uppercase bg-linear-to-r from-slate-950 via-blue-950 to-slate-900">
       <header className="w-full flex flex-col">
-        {/* faixa branca */}
-        <div className="w-full bg-white h-7"></div>
-
         {/* barra principal */}
-        <div className="w-full px-3 sm:px-4 md:px-6 lg:px-10 py-3 grid grid-cols-[auto_1fr_auto] items-center gap-2 sm:gap-3 md:gap-4 lg:gap-8">
+        <div className="w-full px-3 sm:px-4 md:px-6 lg:px-10 py-3 grid grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-3 md:gap-4 lg:gap-8">
           {/* coluna esquerda: menu (mobile) + logo (desktop) */}
           <div className="flex items-center gap-3 justify-self-start min-w-0">
             <button
@@ -36,35 +58,41 @@ export default function Header() {
               <img
                 src="/Imagens/logotipo.png"
                 alt="logotipo"
-                className="w-12 md:w-16 lg:w-18 h-auto object-contain"
+                className="w-10 md:w-11 lg:w-12 h-auto object-contain"
               />
             </Link>
           </div>
-          {/* coluna central: pesquisa */}
-          <div className="justify-self-stretch md:justify-self-start lg:justify-self-center w-full flex justify-center md:justify-start lg:justify-center min-w-0">
-            <div className="flex items-center bg-black border border-white/10 focus-within:border-blue-400/60 rounded-xl md:rounded-2xl px-3 md:px-4 h-10 md:h-12 lg:h-14 w-full max-w-40 sm:max-w-55 md:max-w-55 lg:max-w-md xl:max-w-lg min-w-0 transition-colors duration-200 shadow-inner">
-              <i className="bi bi-search text-white/80 mr-2 md:mr-3 shrink-0 text-sm md:text-lg"></i>
+          {/* coluna central: pesquisa (sempre no meio da tela) */}
+          <div className="justify-self-center flex justify-center min-w-0">
+            <form role="search" aria-label="Busca do site" onSubmit={buscar} className="flex items-center bg-black border border-white/10 lg:border-blue-500/50 focus-within:border-blue-400 lg:shadow-[0_0_0_4px_rgb(59_130_246/0.12),0_10px_30px_-10px_rgb(37_99_235/0.5)] lg:focus-within:shadow-[0_0_0_4px_rgb(59_130_246/0.25),0_10px_30px_-10px_rgb(37_99_235/0.6)] rounded-xl md:rounded-2xl px-3 md:px-4 h-10 md:h-12 lg:h-14 w-[min(56vw,15rem)] sm:w-[min(50vw,18rem)] md:w-[clamp(16rem,40vw,28rem)] lg:w-120 xl:w-136 2xl:w-152 min-w-0 transition-[border-color,box-shadow] duration-200">
+              <i className="bi bi-search text-white/80 lg:text-blue-300 mr-2 md:mr-3 shrink-0 text-sm md:text-lg"></i>
               {/* MOBILE: só até 767px */}
               <input
-                type="text"
+                type="search"
+                name="busca"
                 placeholder="pesquise"
-                className="block md:hidden bg-transparent outline-none text-white placeholder-white/80 text-xs w-full min-w-0 uppercase"
+                aria-label="Pesquisar no site"
+                className="block md:hidden bg-transparent outline-none text-white placeholder-white/80 text-xs w-full min-w-0 uppercase text-center pr-5.5"
               />
 
-              {/* TABLET: 768px até 1279px */}
+              {/* TABLET: 768px até 1023px */}
               <input
-                type="text"
+                type="search"
+                name="busca"
                 placeholder="pesquise aqui"
-                className="hidden md:block xl:hidden bg-transparent outline-none text-white placeholder-white/80 text-sm w-full min-w-0 uppercase"
+                aria-label="Pesquisar no site"
+                className="hidden md:block lg:hidden bg-transparent outline-none text-white placeholder-white/80 text-sm w-full min-w-0 uppercase text-center pr-7.5"
               />
 
-              {/* DESKTOP: 1280px+ */}
+              {/* DESKTOP: 1024px+ — frase completa em destaque */}
               <input
-                type="text"
+                type="search"
+                name="busca"
                 placeholder="pesquise por partidas, competições, times..."
-                className="hidden xl:block bg-transparent outline-none text-white placeholder-white/60 text-base w-full min-w-0 normal-case tracking-normal"
+                aria-label="Pesquisar partidas, competições e times"
+                className="hidden lg:block bg-transparent outline-none text-white placeholder-white/90 font-semibold tracking-wide text-[0.8125rem] xl:text-sm w-full min-w-0 uppercase text-center pr-7.5"
               />
-            </div>
+            </form>
           </div>
 
           {/* coluna direita: logo (mobile) + ícones desktop */}
@@ -78,17 +106,19 @@ export default function Header() {
               <img
                 src="/Imagens/logotipo.png"
                 alt="logotipo"
-                className="w-10 sm:w-12 h-auto object-contain"
+                className="w-9 sm:w-10 h-auto object-contain"
               />
             </Link>
 
-            <nav className="hidden md:flex items-center gap-3 lg:gap-8 text-sm lg:text-lg font-semibold shrink-0">
+            <nav className="hidden md:flex items-center gap-4 xl:gap-6 font-semibold shrink-0">
               <Link
                 to="/"
-                className="hover:text-blue-300 flex items-center gap-2"
+                aria-label="Home"
+                title="Home"
+                className="hover:text-blue-300 flex flex-col items-center gap-1"
               >
-                <i className="bi bi-house text-lg lg:text-xl"></i>
-                <span className="hidden lg:inline">HOME</span>
+                <i className="bi bi-house text-lg xl:text-xl"></i>
+                <span className="hidden xl:block text-[0.625rem] tracking-wider leading-none">HOME</span>
               </Link>
 
               {/* ESPORTES (dropdown) */}
@@ -100,15 +130,20 @@ export default function Header() {
                 <button
                   type="button"
                   onClick={() => setSportsOpen((prev) => !prev)}
-                  className="hover:text-blue-300 flex items-center gap-2"
+                  aria-label="Esportes"
+                  aria-expanded={sportsOpen}
+                  title="Esportes"
+                  className="hover:text-blue-300 flex flex-col items-center gap-1"
                 >
-                  <i className="bi bi-trophy text-lg lg:text-xl"></i>
-                  <span className="hidden lg:inline">ESPORTES</span>
-                  <i
-                    className={`bi bi-chevron-down text-sm transition-transform duration-200 ${
-                      sportsOpen ? "rotate-180" : ""
-                    }`}
-                  ></i>
+                  <span className="flex items-center gap-1">
+                    <i className="bi bi-trophy text-lg xl:text-xl"></i>
+                    <i
+                      className={`bi bi-chevron-down text-xs transition-transform duration-200 ${
+                        sportsOpen ? "rotate-180" : ""
+                      }`}
+                    ></i>
+                  </span>
+                  <span className="hidden xl:block text-[0.625rem] tracking-wider leading-none">ESPORTES</span>
                 </button>
 
                 <div
@@ -156,18 +191,22 @@ export default function Header() {
 
               <Link
                 to="/News"
-                className="hover:text-blue-300 flex items-center gap-2"
+                aria-label="Notícias"
+                title="Notícias"
+                className="hover:text-blue-300 flex flex-col items-center gap-1"
               >
-                <i className="bi bi-newspaper text-lg lg:text-xl"></i>
-                <span className="hidden lg:inline">NOTÍCIAS</span>
+                <i className="bi bi-newspaper text-lg xl:text-xl"></i>
+                <span className="hidden xl:block text-[0.625rem] tracking-wider leading-none">NOTÍCIAS</span>
               </Link>
 
               <Link
                 to="/Contato"
-                className="hover:text-blue-300 flex items-center gap-2"
+                aria-label="Contatos"
+                title="Contatos"
+                className="hover:text-blue-300 flex flex-col items-center gap-1"
               >
-                <i className="bi bi-person text-lg lg:text-xl"></i>
-                <span className="hidden lg:inline">CONTATOS</span>
+                <i className="bi bi-person text-lg xl:text-xl"></i>
+                <span className="hidden xl:block text-[0.625rem] tracking-wider leading-none">CONTATOS</span>
               </Link>
             </nav>
           </div>
