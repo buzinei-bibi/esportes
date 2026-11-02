@@ -63,23 +63,23 @@ html[data-a11y-contraste] body a:not(.a11y-ui *, [vw] *) {
 }
 /* :not(#a11y-x) só aumenta a força da regra para vencer a regra geral acima */
 /* sem enfeites: faixas diagonais e preenchimentos animados somem */
-html[data-a11y-contraste] body :is(.he, .ct-hero, .he-card, .ct-card, .he-cta, .ct-botao):not(#a11y-x)::before,
-html[data-a11y-contraste] body :is(.he, .ct-hero, .he-card, .ct-card, .he-cta, .ct-botao):not(#a11y-x)::after {
+html[data-a11y-contraste] body :is(.he, .ct-hero, .he-card, .ct-card, .he-cta, .ct-botao, .esp-topo, .esp-card, .esp-mini):not(#a11y-x)::before,
+html[data-a11y-contraste] body :is(.he, .ct-hero, .he-card, .ct-card, .he-cta, .ct-botao, .esp-topo, .esp-card, .esp-mini):not(#a11y-x)::after {
   display: none !important;
 }
 /* o que está ativo ou é ação principal fica amarelo com texto preto */
-html[data-a11y-contraste] body :is(.he-card.is-active, .he-cta, .ct-botao, .ct-assunto[aria-pressed="true"], button[type="submit"]):not(.a11y-ui *, #a11y-x) {
+html[data-a11y-contraste] body :is(.he-card.is-active, .he-cta, .ct-botao, .ct-assunto[aria-pressed="true"], .esp-filtro[aria-pressed="true"], .esp-cta, button[type="submit"]):not(.a11y-ui *, #a11y-x) {
   background-color: #fde047 !important;
   border-color: #fde047 !important;
   color: #000 !important;
   text-decoration: none !important;
 }
-html[data-a11y-contraste] body :is(.he-card.is-active, .he-cta, .ct-botao, .ct-assunto[aria-pressed="true"], button[type="submit"]):not(.a11y-ui *, #a11y-x) * {
+html[data-a11y-contraste] body :is(.he-card.is-active, .he-cta, .ct-botao, .ct-assunto[aria-pressed="true"], .esp-filtro[aria-pressed="true"], .esp-cta, button[type="submit"]):not(.a11y-ui *, #a11y-x) * {
   background-color: transparent !important;
   color: #000 !important;
 }
 /* abas e cards que não estão ativos: borda branca bem visível */
-html[data-a11y-contraste] body :is(.he-card, .ct-card, .he-pause, .ct-assunto, .ct-rede, .ct-pergunta, .ct-form, .ct-campo, .ct-mapa):not(#a11y-x) {
+html[data-a11y-contraste] body :is(.he-card, .ct-card, .he-pause, .ct-assunto, .ct-rede, .ct-pergunta, .ct-form, .ct-campo, .ct-mapa, .esp-card, .esp-mini, .esp-filtro, .esp-stat, .esp-cal-item):not(#a11y-x) {
   border: 2px solid #fff !important;
 }
 /* palavras de destaque e campos de texto */
@@ -135,8 +135,9 @@ html[data-a11y-cursor] :is(a, button, label, summary, [role="button"]) * {
 }
 
 /* ---- o botão do VLibras não fica por cima do menu aberto ---- */
+/* (o botão novo do VLibras fica num shadow DOM: só display: none esconde de verdade) */
 html[data-a11y-menu-aberto] :is([vw-access-button], #vlibras-access-wrapper) {
-  visibility: hidden !important;
+  display: none !important;
 }
 
 /* campo de busca: sem o "x" padrão do navegador (o texto fica centralizado) */

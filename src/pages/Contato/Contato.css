@@ -31,14 +31,14 @@
   top: -10%;
   bottom: -10%;
   width: 22%;
-  background: color-mix(in srgb, var(--ct-accent) 9%, transparent);
+  background: color-mix(in srgb, color-mix(in srgb, var(--ct-accent) 30%, #fff) 13%, transparent);
   transform: skewX(-20deg);
   z-index: -1;
   -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
   mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
 }
 .ct-hero::before { right: 26%; }
-.ct-hero::after { right: 8%; width: 9%; background: color-mix(in srgb, var(--ct-accent) 16%, transparent); }
+.ct-hero::after { right: 8%; width: 9%; background: color-mix(in srgb, color-mix(in srgb, var(--ct-accent) 30%, #fff) 20%, transparent); }
 
 .ct-palco {
   flex: 1;
@@ -371,6 +371,34 @@ select.ct-campo option { background: #0b1530; }
   z-index: 1;
 }
 .ct-mapa iframe { display: block; width: 100%; height: clamp(240px, 28vw, 320px); border: 0; filter: saturate(0.85); }
+
+/* escolha do local no mapa (o do site ou a casa de cada equipe) */
+.ct-local {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px 7px 10px;
+  font-family: var(--ct-display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  color: #dbeafe;
+  background: rgb(255 255 255 / 0.04);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 999px;
+  transition: background 0.25s, border-color 0.25s, color 0.25s, box-shadow 0.25s, transform 0.25s;
+}
+.ct-local i { width: 20px; text-align: center; color: var(--ct-accent-claro); transition: color 0.25s; }
+.ct-local-escudo { width: 20px; height: 22px; flex: none; }
+.ct-local:hover { border-color: var(--ct-accent); color: #fff; transform: translateY(-2px); }
+.ct-local[aria-pressed="true"] {
+  background: var(--ct-accent);
+  border-color: var(--ct-accent);
+  color: #fff;
+  box-shadow: 0 8px 22px -8px var(--ct-accent);
+}
+.ct-local[aria-pressed="true"] i { color: #fff; }
+.ct-local:focus-visible { outline: 2px solid var(--ct-accent-claro); outline-offset: 3px; }
 
 /* redes sociais (chips inclinados) */
 .ct-rede {

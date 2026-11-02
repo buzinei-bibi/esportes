@@ -13,6 +13,11 @@ export function normalizar(texto) {
 
 // palavras que levam direto para uma página
 const ATALHOS = [
+  // redes sociais primeiro: "instagram do handebol" vai para a página de links, destacando o instagram
+  { rota: "/redes?rede=instagram", palavras: ["instagram", "insta"] },
+  { rota: "/redes?rede=facebook", palavras: ["facebook", "face"] },
+  { rota: "/redes?rede=youtube", palavras: ["youtube", "videos", "video"] },
+  { rota: "/redes", palavras: ["redes sociais", "rede social", "redes"] },
   { rota: "/Handebol", palavras: ["handebol", "handball", "hand"] },
   { rota: "/Volleyball", palavras: ["volei", "voleibol", "volley", "volleyball"] },
   { rota: "/Tabletennis", palavras: ["tenis de mesa", "tenis", "ping pong", "pingue pongue", "pingpong", "mesa"] },

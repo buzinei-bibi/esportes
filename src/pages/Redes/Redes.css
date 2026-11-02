@@ -1,0 +1,233 @@
+/* ================================================================
+   REDES — página de links separada do site (abre em nova aba,
+   sem header nem rodapé), como um segundo site.
+   Mesma linguagem da home: fundo azul com faixas diagonais, faixa que
+   varre a tela na chegada, fonte condensada, cards arredondados.
+   --lk-rede: cor da marca da rede · --lk-esporte: cor de cada esporte
+   ================================================================ */
+
+.lk {
+  --lk-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --lk-display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+  --lk-texto: "Barlow", system-ui, sans-serif;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  overflow: clip;
+  min-height: 100svh;
+  font-family: var(--lk-texto);
+  color: #fff;
+  background: linear-gradient(90deg, #020617, #172554, #0f172a);
+}
+
+/* faixas diagonais em azul pastel, como no banner da home */
+.lk::before,
+.lk::after {
+  content: "";
+  position: fixed;
+  top: -10%;
+  bottom: -10%;
+  width: 22%;
+  background: rgb(199 218 254 / 0.08);
+  transform: skewX(-20deg);
+  z-index: -1;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 15%, #000 85%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 15%, #000 85%, transparent);
+}
+.lk::before { right: 26%; }
+.lk::after { right: 8%; width: 9%; background: rgb(199 218 254 / 0.13); }
+
+/* faixa que varre a tela na chegada */
+.lk-varre {
+  position: fixed;
+  z-index: 5;
+  top: -10%;
+  bottom: -10%;
+  left: -40%;
+  width: 36%;
+  background: linear-gradient(90deg, #2563eb, #38bdf8);
+  opacity: 0;
+  pointer-events: none;
+  animation: lk-varre 1.1s cubic-bezier(0.7, 0, 0.2, 1) 0.05s;
+}
+@keyframes lk-varre {
+  0% { opacity: 0.95; transform: skewX(-20deg) translateX(0); }
+  100% { opacity: 0.95; transform: skewX(-20deg) translateX(520%); }
+}
+
+.lk-conteudo {
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
+  padding: clamp(28px, 6vh, 56px) clamp(20px, 4.5vw, 48px) 48px;
+}
+
+/* ---------- topo ---------- */
+.lk-topo { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.lk-marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font: 800 1.15rem var(--lk-display);
+  letter-spacing: 0.08em;
+  transition: opacity 0.2s;
+}
+.lk-marca:hover { opacity: 0.85; }
+.lk-marca img { width: 48px; height: auto; }
+.lk-marca em { font-style: normal; color: #60a5fa; }
+.lk-marca:focus-visible { outline: 2px solid #93c5fd; outline-offset: 4px; border-radius: 8px; }
+
+.lk-sobretitulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: clamp(1.75rem, 5vh, 2.75rem);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: #93c5fd;
+}
+.lk-sobretitulo::before,
+.lk-sobretitulo::after { content: ""; width: 28px; height: 4px; border-radius: 4px; background: #60a5fa; }
+
+.lk-titulo { margin-top: 0.7rem; font: 800 clamp(2.6rem, 6.5vw, 5rem)/0.92 var(--lk-display); }
+.lk-titulo em { font-style: normal; color: #60a5fa; }
+
+/* as três redes (destacam os botões nos cards) */
+.lk-redes { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 1.4rem; }
+.lk-rede {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font: 700 0.95rem var(--lk-display);
+  letter-spacing: 0.08em;
+  color: #dbeafe;
+  background: rgb(255 255 255 / 0.05);
+  border: 1px solid rgb(147 197 253 / 0.3);
+  transition: background 0.25s, border-color 0.25s, color 0.25s, box-shadow 0.25s, transform 0.25s;
+}
+.lk-rede i { color: var(--lk-rede); transition: color 0.25s; }
+.lk-rede:hover { border-color: var(--lk-rede); color: #fff; transform: translateY(-2px); }
+.lk-rede[aria-pressed="true"] { background: var(--lk-rede); border-color: var(--lk-rede); color: #fff; box-shadow: 0 8px 22px -8px var(--lk-rede); }
+.lk-rede[aria-pressed="true"] i { color: #fff; }
+.lk-rede:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+/* ---------- cards das equipes ---------- */
+.lk-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: clamp(2.25rem, 5vh, 3rem);
+}
+.lk-cards > li { display: flex; }
+.lk-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 28px 22px 30px;
+  text-align: center;
+  border-radius: 20px;
+  background: rgb(0 0 0 / 0.24);
+  border: 1px solid rgb(147 197 253 / 0.35);
+  box-shadow: 0 10px 30px -18px rgb(37 99 235 / 0.8);
+  transition: border-color 0.3s, box-shadow 0.4s;
+}
+.lk-card::after { content: ""; position: absolute; inset: auto 0 0 0; height: 4px; background: var(--lk-esporte); }
+.lk-card:hover { border-color: rgb(255 255 255 / 0.6); box-shadow: 0 22px 44px -18px var(--lk-esporte); }
+
+.lk-escudo { width: auto; height: 88px; filter: drop-shadow(0 10px 22px rgb(0 0 0 / 0.45)); transition: transform 0.5s var(--lk-ease); }
+.lk-card:hover .lk-escudo { transform: translateY(-4px) scale(1.04); }
+.lk-card-esporte { margin-top: 16px; font-size: 11px; font-weight: 700; letter-spacing: 0.2em; color: var(--lk-esporte-claro); }
+.lk-card-time { margin-top: 4px; font: 800 clamp(1.45rem, 2.2vw, 1.8rem)/1.05 var(--lk-display); }
+
+/* botões de link (no hover a cor da rede preenche da esquerda, como nos cards do contato) */
+.lk-links { display: grid; gap: 10px; width: 100%; margin-top: 20px; }
+.lk-link {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 12px 16px;
+  text-align: left;
+  border-radius: 14px;
+  background: rgb(255 255 255 / 0.04);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  transition: border-color 0.3s, transform 0.3s var(--lk-ease), box-shadow 0.3s;
+}
+.lk-link::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--lk-rede);
+  transform: translateX(-101%);
+  transition: transform 0.45s var(--lk-ease);
+}
+.lk-link:hover { border-color: var(--lk-rede); transform: translateY(-2px); }
+.lk-link:hover::before { transform: none; }
+.lk-link:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.lk-link-icone {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  color: #fff;
+  background: var(--lk-rede);
+  transition: background 0.3s;
+}
+.lk-link:hover .lk-link-icone { background: rgb(255 255 255 / 0.18); }
+.lk-link-texto { flex: 1; min-width: 0; font: 800 1.1rem/1.1 var(--lk-display); letter-spacing: 0.04em; }
+.lk-link-seta { flex: none; color: #94a3b8; transition: transform 0.3s var(--lk-ease), color 0.3s; }
+.lk-link:hover .lk-link-seta { color: #fff; transform: translate(2px, -2px); }
+
+/* rede escolhida no rodapé/contato: botão já aparece destacado */
+.lk-link.is-destaque { border-color: var(--lk-rede); box-shadow: 0 0 0 1px var(--lk-rede), 0 10px 26px -12px var(--lk-rede); }
+
+.lk-falta { margin-top: 14px; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: #64748b; }
+
+/* ---------- rodapé da página ---------- */
+.lk-rodape { margin-top: 2.5rem; text-align: center; }
+.lk-voltar {
+  font: 700 0.95rem var(--lk-display);
+  letter-spacing: 0.08em;
+  color: #bfdbfe;
+  transition: color 0.2s;
+}
+.lk-voltar:hover { color: #fff; }
+.lk-voltar:focus-visible { outline: 2px solid #93c5fd; outline-offset: 3px; border-radius: 4px; }
+
+/* ---------- animações de entrada ---------- */
+.lk-sobe,
+.lk-item {
+  opacity: 0;
+  transform: translateY(24px);
+  animation: lk-sobe 0.8s var(--lk-ease) forwards;
+}
+.lk-sobe { animation-delay: var(--atraso, 0s); }
+.lk-item { animation-delay: calc(var(--i, 0) * 90ms); }
+@keyframes lk-sobe { to { opacity: 1; transform: none; } }
+
+html[data-a11y-sem-animacao] :is(.lk-sobe, .lk-item) { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lk *,
+  .lk *::before,
+  .lk *::after { animation: none !important; transition-duration: 0.01s !important; }
+  .lk-sobe, .lk-item { opacity: 1; transform: none; }
+}
+
+/* ---------- responsivo ---------- */
+@media (max-width: 900px) {
+  .lk-cards { grid-template-columns: minmax(0, 1fr); max-width: 480px; margin-inline: auto; }
+}

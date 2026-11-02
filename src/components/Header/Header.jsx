@@ -92,6 +92,11 @@ export default function Header() {
                 aria-label="Pesquisar partidas, competições e times"
                 className="hidden lg:block bg-transparent outline-none text-white placeholder-white/90 font-semibold tracking-wide text-[0.8125rem] xl:text-sm w-full min-w-0 uppercase text-center pr-7.5"
               />
+
+              {/* com 3 campos no formulário, o Enter só envia se houver um botão de enviar */}
+              <button type="submit" tabIndex={-1} className="sr-only">
+                Buscar
+              </button>
             </form>
           </div>
 

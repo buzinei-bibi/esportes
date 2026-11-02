@@ -1,10 +1,60 @@
 import { useState } from "react";
 import Button from "../../components/Button/Button";
+import { EscudoHandebol, EscudoVolei, EscudoTenisDeMesa } from "../../components/Escudos/Escudos";
+import { REDES_SOCIAIS } from "../../data/jogos";
 import "./Contato.css";
 
 const EMAIL = "ttéesportes@gmail.com";
 const TELEFONE = "+55 (12) 12345-6789";
-const ENDERECO = "TV. AMADEU RIBEIRO DA COSTA, 272 - AREÃO, TREMEMBÉ - SP, 12125-442";
+// endereço da dona do site: a rua do Maracanã (exemplo: só a rua, sem número)
+const ENDERECO = "R. PROF. EURICO RABELO - MARACANÃ, RIO DE JANEIRO - RJ, 20271-150";
+
+// locais do mapa: o principal (o do site) e a casa de cada equipe — um de cada vez.
+// busca = o que vai para o google maps
+// centro = só o mapa daquele ponto, sem o quadro de texto do google por cima
+const LOCAIS = [
+  {
+    id: "site",
+    titulo: ["ONDE", "ESTAMOS"],
+    local: "TAUBATÉ ESPORTES",
+    endereco: ENDERECO,
+    busca: "Rua Professor Eurico Rabelo, Maracanã, Rio de Janeiro - RJ",
+    centro: { lat: -22.9139368, lng: -43.2310122 },
+  },
+  {
+    id: "handebol",
+    botao: "Handebol",
+    titulo: ["CASA DO", "HANDEBOL"],
+    local: "GINÁSIO DO CECAP",
+    endereco: "CECAP, TAUBATÉ - SP",
+    busca: "HANDEBOL TAUBATE GINASIO CECAP",
+    Escudo: EscudoHandebol,
+  },
+  {
+    id: "volei",
+    botao: "Vôlei",
+    titulo: ["CASA DO", "VÔLEI"],
+    local: "GINÁSIO DO ABAETÉ",
+    endereco: "CLUBE DE CAMPO ABAETÉ, TAUBATÉ - SP",
+    busca: "Ginásio do Abaeté, Taubaté - SP",
+    Escudo: EscudoVolei,
+  },
+  {
+    id: "tenis-de-mesa",
+    botao: "Tênis de mesa",
+    titulo: ["CASA DO", "TÊNIS DE MESA"],
+    // quadra cedida pela escola para a AMETTA (Associação dos Mesatenistas de Taubaté)
+    local: "EMEF MONSENHOR EVARISTO CAMPISTA CÉSAR",
+    endereco: "TAUBATÉ - SP",
+    busca: "EMEF Monsenhor Evaristo Campista César, Taubaté - SP",
+    Escudo: EscudoTenisDeMesa,
+  },
+];
+const linkDoMapa = (busca) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(busca)}`;
+const mapaEmbutido = ({ busca, centro }) =>
+  centro
+    ? `https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d1500!2d${centro.lng}!3d${centro.lat}!3m2!1i1024!2i768!4f13.1!5e0!3m2!1spt-BR!2sbr!4v1`
+    : `https://www.google.com/maps?q=${encodeURIComponent(busca)}&output=embed`;
 
 const CONTATOS = [
   { rotulo: "TELEFONE", valor: TELEFONE, icone: "bi-telephone-fill", link: "tel:+5512123456789" },
@@ -13,7 +63,7 @@ const CONTATOS = [
     rotulo: "ENDEREÇO",
     valor: ENDERECO,
     icone: "bi-geo-alt-fill",
-    link: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ENDERECO)}`,
+    link: linkDoMapa(LOCAIS[0].busca),
     externo: true,
   },
 ];
@@ -25,12 +75,6 @@ const ASSUNTOS = [
   { nome: "PARCERIAS E DIVULGAÇÕES", valor: "parcerias", icone: "bi-megaphone-fill" },
 ];
 
-// mesmas redes do rodapé
-const REDES = [
-  { nome: "Instagram", link: "https://www.instagram.com/ec.taubate/", icone: "bi-instagram" },
-  { nome: "Facebook", link: "https://www.facebook.com/groups/ttesp/", icone: "bi-facebook" },
-  { nome: "YouTube", link: "https://www.youtube.com/hashtag/taubate", icone: "bi-youtube" },
-];
 
 // perguntas frequentes: explicam o que mandar em cada caso
 const PERGUNTAS = [
@@ -102,6 +146,8 @@ function CenaContato() {
 
 function Contato() {
   const [assunto, setAssunto] = useState("");
+  const [idLocal, setIdLocal] = useState("site");
+  const local = LOCAIS.find((l) => l.id === idLocal);
   const [status, setStatus] = useState("");
 
   // sem servidor: abre o e-mail da pessoa com a mensagem já preenchida
@@ -162,7 +208,7 @@ function Contato() {
                     </span>
                     <span className="min-w-0">
                       <span className="ct-card-rotulo">{c.rotulo}</span>
-                      <span className="ct-card-valor normal-case">{c.rotulo === "E-MAIL" ? c.valor : c.valor.toUpperCase()}</span>
+                      <span className="ct-card-valor">{c.valor.toUpperCase()}</span>
                     </span>
                   </span>
                 </a>
@@ -200,15 +246,16 @@ function Contato() {
 
             {/* redes sociais */}
             <div className="mt-8">
-              <p className="ct-rotulo">SIGA O TAUBATÉ ESPORTES</p>
+              <p className="ct-rotulo">SIGA AS EQUIPES DE TAUBATÉ</p>
+              {/* mesmas redes do rodapé: abrem, em nova aba, a página de links das equipes */}
               <ul className="mt-2 flex flex-wrap gap-2">
-                {REDES.map((rede) => (
-                  <li key={rede.nome}>
+                {REDES_SOCIAIS.map((rede) => (
+                  <li key={rede.id}>
                     <a
-                      href={rede.link}
+                      href={`/redes?rede=${rede.id}`}
                       target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`${rede.nome} (abre em nova aba)`}
+                      rel="noopener"
+                      aria-label={`${rede.nome} das equipes de Taubaté (abre em nova aba)`}
                       className="ct-rede"
                     >
                       <i className={`bi ${rede.icone}`} aria-hidden="true"></i>
@@ -276,22 +323,47 @@ function Contato() {
               <div>
                 <p className="ct-eyebrow">GOOGLE MAPS</p>
                 <h2 id="ct-mapa-titulo" className="ct-subtitulo">
-                  ONDE <em>ESTAMOS</em>
+                  {local.titulo[0]} <em>{local.titulo[1]}</em>
                 </h2>
-                <p className="mt-3 text-xs sm:text-sm text-slate-400">{ENDERECO}</p>
+                {/* a casa do site (que abre primeiro) fica só com "onde estamos"; os esportes mostram o ginásio */}
+                {local.id !== "site" && (
+                  <p className="mt-3 text-xs sm:text-sm text-slate-400" aria-live="polite">
+                    <b className="text-white font-bold">{local.local}</b> · {local.endereco}
+                  </p>
+                )}
               </div>
-              <a href={CONTATOS[2].link} target="_blank" rel="noopener noreferrer" className="ct-link">
+              <a href={linkDoMapa(local.busca)} target="_blank" rel="noopener noreferrer" className="ct-link">
                 COMO CHEGAR
                 <span aria-hidden="true">→</span>
               </a>
             </div>
 
+            {/* um local de cada vez: o mapa abre no site; cada esporte mostra a casa da equipe.
+                clicar de novo no esporte escolhido volta para o mapa do site */}
+            <div className="flex flex-wrap gap-2 mb-4" role="group" aria-label="Ver a casa de cada equipe no mapa">
+              {LOCAIS.filter((l) => l.Escudo).map((l) => (
+                <button
+                  key={l.id}
+                  type="button"
+                  aria-pressed={idLocal === l.id}
+                  onClick={() => setIdLocal(idLocal === l.id ? "site" : l.id)}
+                  className="ct-local"
+                >
+                  <span aria-hidden="true" className="contents">
+                    <l.Escudo className="ct-local-escudo" titulo="" />
+                  </span>
+                  {l.botao.toUpperCase()}
+                </button>
+              ))}
+            </div>
+
             <div className="ct-mapa">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3672.857132836787!2d-45.5597409!3d-22.992280500000003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ccf90e2c49e509%3A0xeb2fa9c1ad7668bb!2sSmash%20Club%20-%20T%C3%AAnis%20de%20Mesa%20Taubat%C3%A9!5e0!3m2!1spt-BR!2sbr!4v1783079779265!5m2!1spt-BR!2sbr"
+                key={local.id}
+                src={mapaEmbutido(local)}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Mapa: localização do Taubaté Esportes"
+                title={`Mapa: ${local.local.toLowerCase()}`}
               />
             </div>
           </div>

@@ -3,7 +3,7 @@
 export const CATEGORIAS = [
   {
     id: "masc-adulto",
-    label: "masculino profissional",
+    label: "masculino",
     curto: "masc.",
     genero: "mars",
     gradient: "from-blue-600 to-slate-700",
@@ -21,7 +21,7 @@ export const CATEGORIAS = [
   },
   {
     id: "fem-adulto",
-    label: "feminino profissional",
+    label: "feminino",
     curto: "fem.",
     genero: "venus",
     gradient: "from-pink-600 to-rose-700",
@@ -40,6 +40,16 @@ export const CATEGORIAS = [
 ];
 
 export const TIME_CASA = "TÊNIS DE MESA TAUBATÉ";
+
+// redes oficiais da equipe (AMETTA - Associação dos Mesatenistas de Taubaté).
+// em nov/2026 não foram encontrados facebook, instagram nem youtube da associação;
+// só o site antigo, que fica como link até existir uma rede social
+export const REDES = {
+  facebook: "",
+  instagram: "",
+  youtube: "",
+  site: "https://rankingpingpong.webnode.page/",
+};
 
 export const DADOS = {
   "masc-adulto": {
@@ -61,7 +71,7 @@ export const DADOS = {
         setsMandante: "3",
         setsVisitante: "1",
         parciais: ["11-8", "9-11", "11-7", "11-9"],
-        local: "ginásio taubatinha, taubaté",
+        local: "emef monsenhor evaristo campista césar, taubaté",
         resultado: "V",
       },
       {
@@ -85,7 +95,7 @@ export const DADOS = {
         setsMandante: "3",
         setsVisitante: "1",
         parciais: ["11-9", "11-7", "9-11", "11-6"],
-        local: "ginásio taubatinha, taubaté",
+        local: "emef monsenhor evaristo campista césar, taubaté",
         resultado: "V",
       },
       {
@@ -103,23 +113,24 @@ export const DADOS = {
     ],
     proximosJogos: [
       {
-        id: 7,
+        id: "tmp3",
         competicao: "TMB ESTADUAL PAULISTA",
-        data: "05/08/2026",
-        hora: "19h30",
-        local: "ginásio taubatinha, taubaté",
-        adversario: "PIRACICABA TM",
-        mandante: true,
+        data: "07/11/2026",
+        hora: "19h00",
+        local: "ginásio municipal, sorocaba",
+        adversario: "SOROCABA TM",
+        mandante: false,
         entradaLivre: false,
+        ingresso: { disponivel: false },
       },
       {
-        id: 8,
+        id: "tmp4",
         competicao: "LIGA VALE PARAIBANA DE TÊNIS DE MESA",
-        data: "12/08/2026",
+        data: "14/11/2026",
         hora: "20h00",
-        local: "ginásio municipal, jundiaí",
+        local: "emef monsenhor evaristo campista césar, taubaté",
         adversario: "JUNDIAÍ TM",
-        mandante: false,
+        mandante: true,
         entradaLivre: true,
       },
     ],
@@ -159,6 +170,12 @@ export const DADOS = {
       { id: 10, data: "22/07/2026", competicao: "TMB ESTADUAL PAULISTA", confronto: "TÊNIS DE MESA TAUBATÉ x MOGI MIRIM TM", local: "taubaté", status: "encerrado", resultado: "V" },
       { id: 11, data: "05/08/2026", competicao: "TMB ESTADUAL PAULISTA", confronto: "TÊNIS DE MESA TAUBATÉ x PIRACICABA TM", local: "taubaté", status: "agendado", ingresso: true },
       { id: 12, data: "12/08/2026", competicao: "LIGA VALE PARAIBANA DE TÊNIS DE MESA", confronto: "JUNDIAÍ TM x TÊNIS DE MESA TAUBATÉ", local: "jundiaí", status: "agendado", ingresso: false },
+      { id: 30, data: "07/11/2026", competicao: "TMB ESTADUAL PAULISTA", confronto: "SOROCABA TM x TÊNIS DE MESA TAUBATÉ", local: "sorocaba", status: "agendado", ingresso: false },
+      { id: 31, data: "14/11/2026", competicao: "LIGA VALE PARAIBANA DE TÊNIS DE MESA", confronto: "TÊNIS DE MESA TAUBATÉ x JUNDIAÍ TM", local: "taubaté", status: "agendado", ingresso: false },
+      { id: 32, data: "21/11/2026", competicao: "CAMPEONATO BRASILEIRO (TMB CHALLENGE PLUS)", confronto: "TÊNIS DE MESA TAUBATÉ x PIRACICABA TM", local: "taubaté", status: "agendado", ingresso: true },
+      { id: 33, data: "28/11/2026", competicao: "JOGOS ABERTOS DO INTERIOR", confronto: "ITU MESA TÊNIS x TÊNIS DE MESA TAUBATÉ", local: "itu", status: "agendado", ingresso: false },
+      { id: 34, data: "05/12/2026", competicao: "TMB ESTADUAL PAULISTA", confronto: "TÊNIS DE MESA TAUBATÉ x ASSIS TM", local: "taubaté", status: "agendado", ingresso: true },
+      { id: 35, data: "12/12/2026", competicao: "CAMPEONATO BRASILEIRO (TMB PLATINUM)", confronto: "MOGI MIRIM TM x TÊNIS DE MESA TAUBATÉ", local: "mogi mirim", status: "agendado", ingresso: false },
     ],
     confrontos: [
       {
@@ -226,7 +243,7 @@ export const DADOS = {
         setsMandante: "3",
         setsVisitante: "0",
         parciais: ["11-6", "11-8", "11-9"],
-        local: "ginásio taubatinha, taubaté",
+        local: "emef monsenhor evaristo campista césar, taubaté",
         resultado: "V",
       },
       {
@@ -250,7 +267,7 @@ export const DADOS = {
         setsMandante: "3",
         setsVisitante: "2",
         parciais: ["11-9", "9-11", "11-6", "8-11", "11-8"],
-        local: "ginásio taubatinha, taubaté",
+        local: "emef monsenhor evaristo campista césar, taubaté",
         resultado: "V",
       },
       {
@@ -262,30 +279,32 @@ export const DADOS = {
         setsMandante: "3",
         setsVisitante: "1",
         parciais: ["11-8", "9-11", "11-7", "11-6"],
-        local: "ginásio taubatinha, taubaté",
+        local: "emef monsenhor evaristo campista césar, taubaté",
         resultado: "V",
       },
     ],
     proximosJogos: [
       {
-        id: 15,
-        competicao: "CAMPEONATO BRASILEIRO (TMB PLATINUM)",
-        data: "09/08/2026",
+        id: "tfp3",
+        competicao: "TMB ESTADUAL PAULISTA",
+        data: "08/11/2026",
         hora: "18h00",
-        local: "ginásio taubatinha, taubaté",
-        adversario: "SOROCABA TM",
+        local: "emef monsenhor evaristo campista césar, taubaté",
+        adversario: "RIBEIRÃO PRETO TM",
         mandante: true,
         entradaLivre: false,
+        ingresso: { disponivel: true, link: "#" },
       },
       {
-        id: 16,
-        competicao: "LIGA VALE PARAIBANA DE TÊNIS DE MESA",
-        data: "22/08/2026",
-        hora: "19h00",
-        local: "ginásio taubatinha, taubaté",
-        adversario: "ITU MESA TÊNIS",
-        mandante: true,
-        entradaLivre: true,
+        id: "tfp4",
+        competicao: "JOGOS REGIONAIS",
+        data: "15/11/2026",
+        hora: "19h30",
+        local: "ginásio municipal, sorocaba",
+        adversario: "SOROCABA TM",
+        mandante: false,
+        entradaLivre: false,
+        ingresso: { disponivel: false },
       },
     ],
     classificacao: {
@@ -320,6 +339,11 @@ export const DADOS = {
       { id: 22, data: "08/07/2026", competicao: "JOGOS REGIONAIS", confronto: "TÊNIS DE MESA TAUBATÉ x ITU MESA TÊNIS", local: "Taubaté", status: "encerrado", resultado: "V" },
       { id: 23, data: "09/08/2026", competicao: "CAMPEONATO BRASILEIRO (TMB PLATINUM)", confronto: "TÊNIS DE MESA TAUBATÉ x SOROCABA TM", local: "taubaté", status: "agendado", ingresso: true },
       { id: 24, data: "22/08/2026", competicao: "LIGA VALE PARAIBANA DE TÊNIS DE MESA", confronto: "TÊNIS DE MESA TAUBATÉ x ITU MESA TÊNIS", local: "Taubaté", status: "agendado", ingresso: false },
+      { id: 40, data: "08/11/2026", competicao: "TMB ESTADUAL PAULISTA", confronto: "TÊNIS DE MESA TAUBATÉ x RIBEIRÃO PRETO TM", local: "taubaté", status: "agendado", ingresso: true },
+      { id: 41, data: "15/11/2026", competicao: "JOGOS REGIONAIS", confronto: "SOROCABA TM x TÊNIS DE MESA TAUBATÉ", local: "sorocaba", status: "agendado", ingresso: false },
+      { id: 42, data: "22/11/2026", competicao: "LIGA VALE PARAIBANA DE TÊNIS DE MESA", confronto: "TÊNIS DE MESA TAUBATÉ x ITU MESA TÊNIS", local: "taubaté", status: "agendado", ingresso: false },
+      { id: 43, data: "29/11/2026", competicao: "CAMPEONATO BRASILEIRO (TMB CHALLENGE PLUS)", confronto: "TÊNIS DE MESA TAUBATÉ x SOROCABA TM", local: "taubaté", status: "agendado", ingresso: true },
+      { id: 44, data: "06/12/2026", competicao: "JOGOS ABERTOS DO INTERIOR", confronto: "RIBEIRÃO PRETO TM x TÊNIS DE MESA TAUBATÉ", local: "ribeirão preto", status: "agendado", ingresso: false },
     ],
     confrontos: [
       {

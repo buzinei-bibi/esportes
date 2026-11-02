@@ -116,6 +116,30 @@ function textoDoElemento(el) {
   return el.getAttribute("aria-label") || el.innerText || el.textContent;
 }
 
+// botão do VLibras menor (32px em vez de 40px) para não cobrir o texto da página.
+// ele fica num shadow DOM do próprio VLibras: o CSS do site não alcança, então o estilo vai lá dentro.
+// o botão de acessibilidade fica logo abaixo, com o mesmo tamanho (ver className do gatilho).
+const ESTILO_VLIBRAS = `
+  #vlibras-access { width: 32px; height: 32px; right: 8px; top: calc(50vh - 16px); }
+  #vlibras-access:hover, #vlibras-access:has(#vlibras-button:focus-visible) { width: 160px; }
+  #vlibras-button, #vlibras-popup { height: 32px; border-radius: 7px; }
+  #vlibras-button { width: 32px; }
+  #vlibras-button img { width: 100%; height: 100%; }
+`;
+
+function diminuirVLibras() {
+  const raiz = document.querySelector("#vlibras-access-wrapper")?.shadowRoot;
+  // espera o VLibras terminar de montar o botão
+  if (!raiz?.getElementById("vlibras-access")) return false;
+  if (!raiz.getElementById("vlibras-tamanho")) {
+    const estilo = document.createElement("style");
+    estilo.id = "vlibras-tamanho";
+    estilo.textContent = ESTILO_VLIBRAS;
+    raiz.appendChild(estilo);
+  }
+  return true;
+}
+
 function Button({ espacoFinal = true }) {
   const [menuAberto, setMenuAberto] = useState(false);
   const [config, setConfig] = useState(lerConfig);
@@ -135,6 +159,17 @@ function Button({ espacoFinal = true }) {
   const alternar = (chave) => setConfig((c) => ({ ...c, [chave]: !c[chave] }));
   const proximoNivel = (chave) =>
     setConfig((c) => ({ ...c, [chave]: (c[chave] + 1) % (NIVEIS[chave].length + 1) }));
+
+  // ---- deixa o botão do VLibras do mesmo tamanho do de acessibilidade ----
+  useEffect(() => {
+    if (diminuirVLibras()) return;
+    // o VLibras carrega de outro site: tenta de novo até ele aparecer (por até 30s)
+    let tentativas = 0;
+    const intervalo = setInterval(() => {
+      if (diminuirVLibras() || ++tentativas > 100) clearInterval(intervalo);
+    }, 300);
+    return () => clearInterval(intervalo);
+  }, []);
 
   // ---- aplica a configuração no <html> e salva ----
   useEffect(() => {
@@ -388,18 +423,19 @@ function Button({ espacoFinal = true }) {
             </>
           )}
 
-          {/* botão de acessibilidade */}
+          {/* botão de acessibilidade: logo abaixo do botão do VLibras
+              (que fica a 8px da direita, centralizado na altura, com 32x32: ver ESTILO_VLIBRAS) */}
           <button
             ref={gatilhoRef}
             onClick={() => setMenuAberto(true)}
             aria-label="Abrir menu de acessibilidade (Ctrl + L)"
             aria-expanded={menuAberto}
             aria-controls="menu-acessibilidade"
-            className="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-9991 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-blue-700 ring-4 ring-blue-950/60 shadow-2xl flex items-center justify-center hover:bg-blue-600 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-300"
+            className="fixed top-[calc(50vh+24px)] right-2 z-9991 size-8 rounded-full bg-blue-700 shadow-lg shadow-black/40 flex items-center justify-center hover:bg-blue-600 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-300"
           >
-            <Accessibility className="size-5 sm:size-[22px]" />
+            <Accessibility className="size-4" />
             {totalAtivos > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-yellow-300 text-black text-[0.625rem] font-bold grid place-items-center">
+              <span className="absolute -top-1.5 -right-1.5 min-w-4 h-4 px-1 rounded-full bg-yellow-300 text-black text-[0.56rem] font-bold grid place-items-center">
                 {totalAtivos}
               </span>
             )}

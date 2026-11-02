@@ -25,6 +25,13 @@ export const CATEGORIAS = [
 
 export const TIME_CASA = "HANDEBOL TAUBATÉ";
 
+// redes oficiais do time (conferidas em nov/2026); deixe vazio o que não existir
+export const REDES = {
+  facebook: "https://www.facebook.com/handeboltaubateoficial",
+  instagram: "https://www.instagram.com/handeboltaubate/",
+  youtube: "https://www.youtube.com/@handeboltaubate",
+};
+
 export const DADOS = {
   masc: {
     competicoesDisputadas: [
@@ -44,7 +51,7 @@ export const DADOS = {
         golsMandante: 29,
         golsVisitante: 26,
         intervalo: "15-13",
-        local: "GINÁSIO TAUBATINHA, TAUBATÉ",
+        local: "GINÁSIO DO CECAP, TAUBATÉ",
         resultado: "V",
       },
       {
@@ -68,7 +75,7 @@ export const DADOS = {
         golsMandante: 25,
         golsVisitante: 28,
         intervalo: "13-15",
-        local: "GINÁSIO TAUBATINHA, TAUBATÉ",
+        local: "GINÁSIO DO CECAP, TAUBATÉ",
         resultado: "D",
       },
       {
@@ -80,29 +87,29 @@ export const DADOS = {
         golsMandante: 31,
         golsVisitante: 22,
         intervalo: "16-10",
-        local: "GINÁSIO TAUBATINHA, TAUBATÉ",
+        local: "GINÁSIO DO CECAP, TAUBATÉ",
         resultado: "V",
       },
     ],
     proximosJogos: [
       {
-        id: "mp1",
+        id: "mp3",
         competicao: "LIGA NACIONAL DE HANDEBOL",
-        data: "03/08/2026",
+        data: "07/11/2026",
         hora: "20H00",
-        local: "GINÁSIO TAUBATINHA, TAUBATÉ",
-        adversario: "BLUMENAU HANDEBOL",
+        local: "GINÁSIO DO CECAP, TAUBATÉ",
+        adversario: "EC PINHEIROS",
         mandante: true,
         entradaLivre: false,
         ingresso: { disponivel: true, link: "#" },
       },
       {
-        id: "mp2",
+        id: "mp4",
         competicao: "CAMPEONATO PAULISTA",
-        data: "10/08/2026",
-        hora: "19H30",
-        local: "GINÁSIO MUNICIPAL, OSASCO",
-        adversario: "OSASCO HANDEBOL",
+        data: "14/11/2026",
+        hora: "19H00",
+        local: "GINÁSIO MUNICIPAL, GUARULHOS",
+        adversario: "GUARULHOS HANDEBOL",
         mandante: false,
         entradaLivre: false,
         ingresso: { disponivel: false },
@@ -158,6 +165,12 @@ export const DADOS = {
       { id: "mc4", data: "21/07/2026", competicao: "LIGA NACIONAL DE HANDEBOL", confronto: "HANDEBOL TAUBATÉ X METODISTA SÃO BERNARDO", local: "TAUBATÉ", status: "encerrado", resultado: "V" },
       { id: "mc5", data: "03/08/2026", competicao: "LIGA NACIONAL DE HANDEBOL", confronto: "HANDEBOL TAUBATÉ X BLUMENAU HANDEBOL", local: "TAUBATÉ", status: "agendado", ingresso: true },
       { id: "mc6", data: "10/08/2026", competicao: "CAMPEONATO PAULISTA", confronto: "OSASCO HANDEBOL X HANDEBOL TAUBATÉ", local: "OSASCO", status: "agendado", ingresso: false },
+      { id: "mc7", data: "07/11/2026", competicao: "LIGA NACIONAL DE HANDEBOL", confronto: "HANDEBOL TAUBATÉ X EC PINHEIROS", local: "TAUBATÉ", status: "agendado", ingresso: true },
+      { id: "mc8", data: "14/11/2026", competicao: "CAMPEONATO PAULISTA", confronto: "GUARULHOS HANDEBOL X HANDEBOL TAUBATÉ", local: "GUARULHOS", status: "agendado", ingresso: false },
+      { id: "mc9", data: "21/11/2026", competicao: "JOGOS ABERTOS DO INTERIOR", confronto: "HANDEBOL TAUBATÉ X SOROCABA HANDEBOL", local: "TAUBATÉ", status: "agendado", ingresso: false },
+      { id: "mc10", data: "28/11/2026", competicao: "LIGA NACIONAL DE HANDEBOL", confronto: "CASCAVEL HANDEBOL X HANDEBOL TAUBATÉ", local: "CASCAVEL", status: "agendado", ingresso: false },
+      { id: "mc11", data: "05/12/2026", competicao: "LIGA NACIONAL DE HANDEBOL", confronto: "HANDEBOL TAUBATÉ X METODISTA SÃO BERNARDO", local: "TAUBATÉ", status: "agendado", ingresso: true },
+      { id: "mc12", data: "12/12/2026", competicao: "CAMPEONATO PAULISTA", confronto: "HANDEBOL TAUBATÉ X OSASCO HANDEBOL", local: "TAUBATÉ", status: "agendado", ingresso: true },
     ],
     confrontos: [
       {
@@ -234,7 +247,7 @@ export const DADOS = {
         golsMandante: 24,
         golsVisitante: 21,
         intervalo: "12-10",
-        local: "GINÁSIO TAUBATINHA, TAUBATÉ",
+        local: "GINÁSIO DO CECAP, TAUBATÉ",
         resultado: "V",
       },
       {
@@ -258,7 +271,7 @@ export const DADOS = {
         golsMandante: 26,
         golsVisitante: 24,
         intervalo: "12-13",
-        local: "GINÁSIO TAUBATINHA, TAUBATÉ",
+        local: "GINÁSIO DO CECAP, TAUBATÉ",
         resultado: "V",
       },
       {
@@ -276,22 +289,22 @@ export const DADOS = {
     ],
     proximosJogos: [
       {
-        id: "s18fp1",
+        id: "s18fp3",
         competicao: "CAMPEONATO PAULISTA SUB-18 FEMININO",
-        data: "31/07/2026",
+        data: "08/11/2026",
         hora: "14H00",
-        local: "GINÁSIO TAUBATINHA, TAUBATÉ",
-        adversario: "AVAI JUNDIAÍ HANDEBOL",
+        local: "GINÁSIO DO CECAP, TAUBATÉ",
+        adversario: "HANDEBOL LITORAL CARAGUÁ",
         mandante: true,
         entradaLivre: true,
       },
       {
-        id: "s18fp2",
-        competicao: "JOGOS ABERTOS DO INTERIOR",
-        data: "07/08/2026",
-        hora: "09H30",
-        local: "GINÁSIO MUNICIPAL, UBATUBA",
-        adversario: "HANDEBOL LITORAL CARAGUÁ",
+        id: "s18fp4",
+        competicao: "COPAS E TORNEIOS DA FEDERAÇÃO PAULISTA DE HANDEBOL",
+        data: "15/11/2026",
+        hora: "10H00",
+        local: "GINÁSIO MUNICIPAL, GUARATINGUETÁ",
+        adversario: "GUARÁ HANDEBOL SUB-18 FEM.",
         mandante: false,
         entradaLivre: true,
       },
@@ -334,6 +347,11 @@ export const DADOS = {
       { id: "s18fc2", data: "17/07/2026", competicao: "CAMPEONATO PAULISTA SUB-18 FEMININO", confronto: "HANDEBOL TAUBATÉ X HANDEBOL LITORAL CARAGUÁ", local: "TAUBATÉ", status: "encerrado", resultado: "V" },
       { id: "s18fc3", data: "31/07/2026", competicao: "CAMPEONATO PAULISTA SUB-18 FEMININO", confronto: "HANDEBOL TAUBATÉ X AVAI JUNDIAÍ HANDEBOL", local: "TAUBATÉ", status: "agendado", ingresso: false },
       { id: "s18fc4", data: "07/08/2026", competicao: "JOGOS ABERTOS DO INTERIOR", confronto: "HANDEBOL LITORAL CARAGUÁ X HANDEBOL TAUBATÉ", local: "UBATUBA", status: "agendado", ingresso: false },
+      { id: "s18fc5", data: "08/11/2026", competicao: "CAMPEONATO PAULISTA SUB-18 FEMININO", confronto: "HANDEBOL TAUBATÉ X HANDEBOL LITORAL CARAGUÁ", local: "TAUBATÉ", status: "agendado", ingresso: false },
+      { id: "s18fc6", data: "15/11/2026", competicao: "COPAS E TORNEIOS DA FEDERAÇÃO PAULISTA DE HANDEBOL", confronto: "GUARÁ HANDEBOL SUB-18 FEM. X HANDEBOL TAUBATÉ", local: "GUARATINGUETÁ", status: "agendado", ingresso: false },
+      { id: "s18fc7", data: "22/11/2026", competicao: "CAMPEONATO PAULISTA SUB-18 FEMININO", confronto: "AVAI JUNDIAÍ HANDEBOL X HANDEBOL TAUBATÉ", local: "JUNDIAÍ", status: "agendado", ingresso: false },
+      { id: "s18fc8", data: "29/11/2026", competicao: "JOGOS ABERTOS DO INTERIOR", confronto: "HANDEBOL TAUBATÉ X PINDAMONHANGABA HANDEBOL", local: "TAUBATÉ", status: "agendado", ingresso: false },
+      { id: "s18fc9", data: "06/12/2026", competicao: "CAMPEONATO PAULISTA SUB-18 FEMININO", confronto: "HANDEBOL TAUBATÉ X JACAREÍ SUB-18 FEM. HANDEBOL", local: "TAUBATÉ", status: "agendado", ingresso: false },
     ],
     confrontos: [
       {

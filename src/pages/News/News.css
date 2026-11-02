@@ -26,14 +26,14 @@
   top: -20%;
   bottom: -20%;
   width: 22%;
-  background: rgb(37 99 235 / 0.09);
+  background: rgb(199 218 254 / 0.13);
   transform: skewX(-20deg);
   z-index: -1;
   -webkit-mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent);
   mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent);
 }
 .nt-topo::before { right: 26%; }
-.nt-topo::after { right: 8%; width: 9%; background: rgb(37 99 235 / 0.16); }
+.nt-topo::after { right: 8%; width: 9%; background: rgb(199 218 254 / 0.2); }
 
 .nt-conteudo {
   width: 100%;

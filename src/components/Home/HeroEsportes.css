@@ -49,14 +49,14 @@
   top: -10%;
   bottom: -10%;
   width: 22%;
-  background: color-mix(in srgb, var(--he-accent) 9%, transparent);
+  background: color-mix(in srgb, color-mix(in srgb, var(--he-accent) 30%, #fff) 13%, transparent);
   transform: skewX(-20deg);
   z-index: -1;
   -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
   mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
 }
 .he::before { right: 26%; }
-.he::after { right: 8%; width: 9%; background: color-mix(in srgb, var(--he-accent) 16%, transparent); }
+.he::after { right: 8%; width: 9%; background: color-mix(in srgb, color-mix(in srgb, var(--he-accent) 30%, #fff) 20%, transparent); }
 
 /* ---------- palco ---------- */
 .he-stage {
@@ -95,6 +95,17 @@
 .he-slide.is-active .he-anim:nth-child(2) { transition-delay: 0.33s; }
 .he-slide.is-active .he-anim:nth-child(3) { transition-delay: 0.45s; }
 .he-slide.is-active .he-anim:nth-child(4) { transition-delay: 0.58s; }
+.he-slide.is-active .he-anim:nth-child(5) { transition-delay: 0.7s; }
+
+/* escudo do time, acima do nome do esporte */
+.he-escudo {
+  display: block;
+  width: auto;
+  height: clamp(44px, 7.5svh, 72px);
+  /* o título tem entrelinha curta (e acento em VÔLEI/TÊNIS): precisa de folga */
+  margin-bottom: clamp(1.25rem, 3svh, 1.9rem);
+  filter: drop-shadow(0 10px 22px rgb(0 0 0 / 0.45));
+}
 
 .he-title {
   font-family: var(--he-display);
@@ -479,6 +490,7 @@
   .he { min-height: 600px; }
   .he-stage { grid-template-columns: 1fr; grid-template-rows: auto auto; align-content: center; align-items: start; gap: 1.5rem; padding-top: 1.25rem; padding-bottom: 1rem; }
   .he-visual { order: -1; }
+  .he-escudo { height: 40px; margin-bottom: 1rem; }
   .he-visual-slide { width: min(78vw, 32svh, 300px); }
   .he-copy { align-self: start; }
   .he-title { font-size: clamp(2.6rem, 12vw, 3.4rem); margin-bottom: 0.7rem; }

@@ -3,8 +3,8 @@
 export const CATEGORIAS = [
   {
     id: "sub19m",
-    label: "sub-19 masc.",
-    curto: "s19 masc.",
+    label: "sub-19 masculino",
+    curto: "sub-19 masc.",
     genero: "mars",
     gradient: "from-blue-600 to-indigo-800",
     ring: "ring-blue-400/50",
@@ -18,8 +18,8 @@ export const CATEGORIAS = [
   },
   {
     id: "sub17f",
-    label: "sub-17 fem.",
-    curto: "s17 fem.",
+    label: "sub-17 feminino",
+    curto: "sub-17 fem.",
     genero: "venus",
     gradient: "from-purple-500 to-fuchsia-700",
     ring: "ring-purple-400/50",
@@ -34,6 +34,14 @@ export const CATEGORIAS = [
 ];
 
 export const TIME_CASA = "vôlei taubaté";
+
+// redes oficiais do time (conferidas em nov/2026); deixe vazio o que não existir
+// youtube: há um canal "Vôlei Taubaté" (@voleitaubate) com 4 vídeos, mas não deu para confirmar que é oficial
+export const REDES = {
+  facebook: "https://www.facebook.com/voleitaubate",
+  instagram: "https://www.instagram.com/voleitaubate/",
+  youtube: "",
+};
 
 export const DADOS = {
   sub19m: {
@@ -52,7 +60,7 @@ export const DADOS = {
         setsMandante: 3,
         setsVisitante: 2,
         parciais: ["25-23", "22-25", "25-20", "20-25", "15-11"],
-        local: "ginásio taubatinha, taubaté",
+        local: "ginásio do abaeté, taubaté",
         resultado: "V",
       },
       {
@@ -76,7 +84,7 @@ export const DADOS = {
         setsMandante: 2,
         setsVisitante: 3,
         parciais: ["25-20", "22-25", "20-25", "25-19", "10-15"],
-        local: "ginásio taubatinha, taubaté",
+        local: "ginásio do abaeté, taubaté",
         resultado: "D",
       },
       {
@@ -88,28 +96,28 @@ export const DADOS = {
         setsMandante: 2,
         setsVisitante: 3,
         parciais: ["25-20", "22-25", "20-25", "25-19", "10-15"],
-        local: "ginásio taubatinha, taubaté",
+        local: "ginásio do abaeté, taubaté",
         resultado: "D",
       },
     ],
     proximosJogos: [
       {
-        id: "s19mp1",
+        id: "s19mp3",
         competicao: "campeonato estadual sub-19 fpv",
-        data: "02/08/2026",
+        data: "08/11/2026",
         hora: "13h00",
-        local: "ginásio taubatinha, taubaté",
-        adversario: "lorena vôlei clube",
+        local: "ginásio do abaeté, taubaté",
+        adversario: "cruzeiro vôlei sp",
         mandante: true,
         entradaLivre: true,
       },
       {
-        id: "s19mp2",
-        competicao: "torneio de transição sub-19",
-        data: "09/08/2026",
+        id: "s19mp4",
+        competicao: "copa vale do paraíba sub-19",
+        data: "15/11/2026",
         hora: "11h00",
-        local: "ginásio municipal, caraguatatuba",
-        adversario: "vôlei caraguatatuba",
+        local: "ginásio municipal, são josé dos campos",
+        adversario: "são josé dos campos",
         mandante: false,
         entradaLivre: true,
       },
@@ -129,6 +137,12 @@ export const DADOS = {
       { id: "s19mc2", data: "11/07/2026", competicao: "torneio de transição sub-19", confronto: "vôlei caraguatatuba x vôlei taubaté", local: "Caraguatatuba", status: "encerrado", resultado: "V" },
       { id: "s19mc3", data: "19/07/2026", competicao: "campeonato estadual sub-19 fpv", confronto: "vôlei taubaté x cruzeiro vôlei sp", local: "Taubaté", status: "encerrado", resultado: "V" },
       { id: "s19mc4", data: "02/08/2026", competicao: "campeonato estadual sub-19 fpv", confronto: "vôlei taubaté x lorena vôlei clube", local: "Taubaté", status: "agendado", ingresso: false },
+      { id: "s19mc5", data: "08/11/2026", competicao: "campeonato estadual sub-19 fpv", confronto: "vôlei taubaté x cruzeiro vôlei sp", local: "Taubaté", status: "agendado", ingresso: false },
+      { id: "s19mc6", data: "15/11/2026", competicao: "copa vale do paraíba sub-19", confronto: "são josé dos campos x vôlei taubaté", local: "São José dos Campos", status: "agendado", ingresso: false },
+      { id: "s19mc7", data: "22/11/2026", competicao: "torneio de transição sub-19", confronto: "vôlei taubaté x vôlei caraguatatuba", local: "Taubaté", status: "agendado", ingresso: false },
+      { id: "s19mc8", data: "29/11/2026", competicao: "campeonato estadual sub-19 fpv", confronto: "lorena vôlei clube x vôlei taubaté", local: "Lorena", status: "agendado", ingresso: false },
+      { id: "s19mc9", data: "06/12/2026", competicao: "copa vale do paraíba sub-19", confronto: "vôlei taubaté x pindamonhangaba vôlei", local: "Taubaté", status: "agendado", ingresso: false },
+      { id: "s19mc10", data: "13/12/2026", competicao: "campeonato estadual sub-19 fpv", confronto: "vôlei caraguatatuba x vôlei taubaté", local: "Caraguatatuba", status: "agendado", ingresso: false },
     ],
     confrontos: [
       {
@@ -186,7 +200,7 @@ export const DADOS = {
         setsMandante: 3,
         setsVisitante: 2,
         parciais: ["25-19", "22-25", "25-23", "21-25", "15-11"],
-        local: "ginásio taubatinha, taubaté",
+        local: "ginásio do abaeté, taubaté",
         resultado: "V",
       },
       {
@@ -210,28 +224,28 @@ export const DADOS = {
         setsMandante: 3,
         setsVisitante: 2,
         parciais: ["25-22", "22-25", "25-19", "20-25", "15-12"],
-        local: "ginásio taubatinha, taubaté",
+        local: "ginásio do abaeté, taubaté",
         resultado: "V",
       },
     ],
     proximosJogos: [
       {
-        id: "s17fp1",
+        id: "s17fp3",
         competicao: "campeonato estadual sub-17 fpv",
-        data: "31/07/2026",
-        hora: "14h00",
-        local: "ginásio taubatinha, taubaté",
-        adversario: "avaí jundiaí vôlei",
+        data: "07/11/2026",
+        hora: "10h00",
+        local: "ginásio do abaeté, taubaté",
+        adversario: "vôlei litoral caraguá",
         mandante: true,
         entradaLivre: true,
       },
       {
-        id: "s17fp2",
-        competicao: "jogos abertos do interior fem.",
-        data: "07/08/2026",
-        hora: "09h30",
-        local: "ginásio taubatinha, ubatuba",
-        adversario: "vôlei litoral caraguá",
+        id: "s17fp4",
+        competicao: "copa vale do paraíba sub-17 fem.",
+        data: "14/11/2026",
+        hora: "15h00",
+        local: "ginásio municipal, pindamonhangaba",
+        adversario: "apv pinda",
         mandante: false,
         entradaLivre: true,
       },
@@ -253,6 +267,11 @@ export const DADOS = {
       { id: "s17fc2", data: "17/07/2026", competicao: "campeonato estadual sub-17 fpv", confronto: "vôlei taubaté x vôlei litoral caraguá", local: "taubaté", status: "encerrado", resultado: "V" },
       { id: "s17fc3", data: "31/07/2026", competicao: "campeonato estadual sub-17 fpv", confronto: "vôlei taubaté x avaí jundiaí vôlei", local: "taubaté", status: "agendado", ingresso: false },
       { id: "s17fc4", data: "07/08/2026", competicao: "jogos abertos do interior fem.", confronto: "vôlei litoral caraguá x vôlei taubaté", local: "ubatuba", status: "agendado", ingresso: false },
+      { id: "s17fc5", data: "07/11/2026", competicao: "campeonato estadual sub-17 fpv", confronto: "vôlei taubaté x vôlei litoral caraguá", local: "taubaté", status: "agendado", ingresso: false },
+      { id: "s17fc6", data: "14/11/2026", competicao: "copa vale do paraíba sub-17 fem.", confronto: "apv pinda x vôlei taubaté", local: "pindamonhangaba", status: "agendado", ingresso: false },
+      { id: "s17fc7", data: "21/11/2026", competicao: "campeonato estadual sub-17 fpv", confronto: "avaí jundiaí vôlei x vôlei taubaté", local: "jundiaí", status: "agendado", ingresso: false },
+      { id: "s17fc8", data: "28/11/2026", competicao: "copa vale do paraíba sub-17 fem.", confronto: "vôlei taubaté x vôlei são sebastião fem.", local: "taubaté", status: "agendado", ingresso: false },
+      { id: "s17fc9", data: "05/12/2026", competicao: "jogos abertos do interior fem.", confronto: "vôlei taubaté x avaí jundiaí vôlei", local: "taubaté", status: "agendado", ingresso: false },
     ],
     confrontos: [
       {

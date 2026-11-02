@@ -2,7 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Pause, Play } from "lucide-react";
 import { ESPORTES } from "../../data/jogos";
+import { EscudoHandebol, EscudoVolei, EscudoTenisDeMesa } from "../Escudos/Escudos";
 import "./HeroEsportes.css";
+
+// escudo do time de cada modalidade (a chave é o id em ESPORTES)
+const ESCUDOS = { handebol: EscudoHandebol, volei: EscudoVolei, "tenis-de-mesa": EscudoTenisDeMesa };
 
 // tempo de cada slide: troca logo depois da jogada (gol, saque, toque na bola)
 const DURACAO_MS = { handebol: 3400, volei: 2800, "tenis-de-mesa": 2900 };
@@ -263,6 +267,22 @@ function HeroEsportes() {
     setTrocas((t) => t + 1);
   }
 
+  // setas ← → trocam de esporte em qualquer ponto da home (não só com o foco nas abas)
+  useEffect(() => {
+    function aoTeclarNaPagina(e) {
+      if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+      // não atrapalha quem está digitando, nem o menu de acessibilidade aberto
+      const alvo = e.target;
+      if (alvo.closest?.("input, textarea, select, [contenteditable], [role='slider'], [role='listbox'], [role='menu']")) return;
+      if (document.documentElement.hasAttribute("data-a11y-menu-aberto")) return;
+      e.preventDefault();
+      ir(atual + (e.key === "ArrowRight" ? 1 : -1));
+    }
+    window.addEventListener("keydown", aoTeclarNaPagina);
+    return () => window.removeEventListener("keydown", aoTeclarNaPagina);
+  });
+
   function aoTeclar(e) {
     const mapa = { ArrowRight: atual + 1, ArrowLeft: atual - 1, Home: 0, End: ESPORTES.length - 1 };
     if (!(e.key in mapa)) return;
@@ -287,8 +307,10 @@ function HeroEsportes() {
           {ESPORTES.map((e, i) => {
             const slide = SLIDES[e.id];
             const ativo = i === atual;
+            const Escudo = ESCUDOS[e.id];
             return (
               <article key={e.id} className={`he-slide ${entrou && ativo ? "is-active" : ""}`} aria-hidden={!ativo} inert={!ativo}>
+                <Escudo className="he-escudo he-anim" />
                 {/* só o slide ativo é o título da página */}
                 {ativo ? (
                   <h1 className="he-title he-anim">{slide.titulo}</h1>

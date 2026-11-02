@@ -54,6 +54,14 @@ function paraData(data, hora) {
   return new Date(a, m - 1, d, h, min);
 }
 
+// horário que o site mostra: só aproximado, porque o jogo pode atrasar ou adiantar
+// "20H00" → "20H" · "19H30" → "19H30"
+export function horaAproximada(hora) {
+  const [h, min] = (hora || "").toUpperCase().split("H");
+  if (!h) return "";
+  return Number(min) ? `${Number(h)}H${min}` : `${Number(h)}H`;
+}
+
 export function srcSetDaFoto(foto) {
   return `${foto}-640.webp 640w, ${foto}-1200.webp 1200w`;
 }
@@ -61,6 +69,14 @@ export function srcSetDaFoto(foto) {
 export function linkDoMapa(local) {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(local)}`;
 }
+
+// redes sociais: a página /redes (aberta em nova aba) mostra o link de cada equipe.
+// os links ficam em REDES, no arquivo de cada esporte. cor = cor da marca da rede
+export const REDES_SOCIAIS = [
+  { id: "facebook", nome: "Facebook", icone: "bi-facebook", cor: "#1877f2" },
+  { id: "instagram", nome: "Instagram", icone: "bi-instagram", cor: "#e1306c" },
+  { id: "youtube", nome: "YouTube", icone: "bi-youtube", cor: "#ff0000" },
+];
 
 // todos os próximos jogos, do mais perto para o mais longe
 export function listarProximosJogos() {

@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
 import Button from "./components/Button/Button";
@@ -8,8 +8,14 @@ import News from "./pages/News/News";
 import Handebol from "./pages/Handebol/Handebol";
 import Volleyball from "./pages/Volleyball/Volleyball";
 import Tabletennis from "./pages/Tabletennis/Tabletennis";
+import Redes from "./pages/Redes/Redes";
 
 function App() {
+  const { pathname } = useLocation();
+
+  // página de links das redes: abre como um site à parte, sem header nem rodapé
+  if (pathname.toLowerCase().startsWith("/redes")) return <Redes />;
+
   return (
     <div className="min-h-screen w-full flex flex-col bg-linear-to-r from-slate-950 via-blue-950 to-slate-900">
       <Header

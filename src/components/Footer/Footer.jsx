@@ -1,25 +1,12 @@
 import { Link } from "react-router-dom";
+import { REDES_SOCIAIS } from "../../data/jogos";
 
-const REDES = [
-  {
-    nome: "Facebook",
-    link: "https://www.facebook.com/groups/ttesp/",
-    icone: "bi-facebook",
-    cor: "bg-[#1877F2]",
-  },
-  {
-    nome: "Instagram",
-    link: "https://www.instagram.com/ec.taubate/",
-    icone: "bi-instagram",
-    cor: "bg-linear-to-tr from-[#FEE411] via-[#E1306C] to-[#833AB4]",
-  },
-  {
-    nome: "YouTube",
-    link: "https://www.youtube.com/hashtag/taubate",
-    icone: "bi-youtube",
-    cor: "bg-[#FF0000]",
-  },
-];
+// cada símbolo abre, em nova aba, a página de links das equipes (/redes), já destacando aquela rede
+const COR_DA_REDE = {
+  facebook: "bg-[#1877F2]",
+  instagram: "bg-linear-to-tr from-[#FEE411] via-[#E1306C] to-[#833AB4]",
+  youtube: "bg-[#FF0000]",
+};
 
 const LINKS = [
   { nome: "HOME", link: "/", icone: "bi-house-door-fill" },
@@ -65,15 +52,15 @@ export default function Footer() {
 
               {/* REDES */}
               <div className="mt-2.5 flex justify-center md:justify-start gap-2">
-                {REDES.map((rede) => (
+                {REDES_SOCIAIS.map((rede) => (
                   <a
-                    key={rede.nome}
-                    href={rede.link}
+                    key={rede.id}
+                    href={`/redes?rede=${rede.id}`}
                     target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`${rede.nome} (abre em nova aba)`}
+                    rel="noopener"
+                    aria-label={`${rede.nome} das equipes de Taubaté (abre em nova aba)`}
                     title={rede.nome}
-                    className={`size-8 rounded-full ${rede.cor} hover:opacity-80 flex items-center justify-center transition`}
+                    className={`size-8 rounded-full ${COR_DA_REDE[rede.id]} hover:opacity-80 flex items-center justify-center transition`}
                   >
                     <i className={`bi ${rede.icone} text-sm`} aria-hidden="true"></i>
                   </a>
